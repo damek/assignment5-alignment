@@ -31,11 +31,8 @@ def create_model(model_name_or_path):
 
 def generate_outputs(prompts, model):
     sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024, stop=["\n"])
-    raw_responses = model.generate(prompts, sampling_params)
-    responses = []
-    for output in raw_responses:
-        response = output.outputs[0].text.strip()
-        responses.append(response)
+    return model.generate(prompts, sampling_params)
+
     return responses
 
 print("Loading dataset...")
