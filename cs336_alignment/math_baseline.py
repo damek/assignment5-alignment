@@ -2,7 +2,7 @@
 import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from vllm import LLM, SamplingParams
-
+from cs336_alignment.drgrpo_grader.r1_zero_reward_fn import r1_zero_reward_fn
 
 FILE_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
@@ -30,10 +30,29 @@ def create_model(model_name_or_path):
     return model
 
 def generate_outputs(prompts, model):
-    sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024, stop=["\n"])
+    sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
+    sampling_params.stop = ["</answer>"]
+    sampling_params.include_stop_str_in_output = True
     return model.generate(prompts, sampling_params)
 
-    return responses
+def evaluate_vllm(
+    vllm_model: LLM,
+    reward_fn: Callable[[str, str], dict[str, float]],
+    prompts: List[str],
+    eval_sampling_params: SamplingParams,
+    dataset: List[dict]
+    ) -> None:
+    """
+    Evaluate a language model on a list of prompts,
+    compute evaluation metrics, and serialize results to disk.
+    """
+    responses = vllm_model.generate(prompts, eval_sampling_params)
+    rewards = []
+    for i, response in enumerate(responses):
+        reward = reward_fn(response.outputs[0].text, dataset[i]["answer"])
+        rewards.append(reward)
+    return rewards
+
 
 print("Loading dataset...")
 dataset=load_dataset(FILE_PATH)    
@@ -41,11 +60,9 @@ print("Creating prompts...")
 prompts=create_prompts(dataset, PROMPT_PATH, 10)
 print("Creating model...")
 model=create_model(MODEL_NAME_OR_PATH)
-print("Generating outputs...")
-responses=generate_outputs(prompts, model)
-# print(responses)
-
-for output in responses:
-    prompt = output.prompt
-    generated_text = output.outputs[0].text
-    print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+print("Evaluating...")
+eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
+eval_sampling_params.stop = ["</answer>"]
+eval_sampling_params.include_stop_str_in_output = True
+rewards=evaluate_vllm(model, r1_zero_reward_fn, prompts, eval_sampling_params, dataset)
+print(rewards)
