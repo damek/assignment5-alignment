@@ -36,11 +36,11 @@ def generate_outputs(prompts, model):
     return model.generate(prompts, sampling_params)
 
 def evaluate_vllm(
-    vllm_model: LLM,
+    vllm_model,
     reward_fn,
-    prompts: List[str],
-    eval_sampling_params: SamplingParams,
-    dataset: List[dict]
+    prompts,
+    eval_sampling_params,
+    dataset
     ) -> None:
     """
     Evaluate a language model on a list of prompts,
