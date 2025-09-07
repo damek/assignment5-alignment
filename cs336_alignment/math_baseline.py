@@ -8,6 +8,6 @@ with open("../data/gsm8k/test.jsonl", "r") as f:
         print(data)
         break
 
-for data in ds:
-    print(data)
+for i in range(10):
+    print(data[i])
     break
