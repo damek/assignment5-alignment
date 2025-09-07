@@ -25,3 +25,5 @@ def create_prompts(dataset, prompt_path, number_of_prompts):
         prompt = prompt.format(question=data["question"])
         prompts.append(prompt)
     return prompts
+
+load_dataset(FILE_PATH)    
