@@ -2,7 +2,7 @@
 import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-with open("../data/gsm8k/gsm8k-test.jsonl", "r") as f:
+with open("../data/gsm8k/test.jsonl", "r") as f:
     for line in f:
         data = json.loads(line)
         print(data)
