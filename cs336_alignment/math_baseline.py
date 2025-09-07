@@ -49,7 +49,10 @@ def evaluate_vllm(
     responses = vllm_model.generate(prompts, eval_sampling_params)
     rewards = []
     for i, response in enumerate(responses):
-        reward = reward_fn(response.outputs[0].text, dataset[i]["answer"])
+        pred = response.outputs[0].text
+        actual = dataset[i]["answer"]
+        print("Prediction: ", pred, "Actual: ", actual)
+        reward = reward_fn(pred, actual)
         rewards.append(reward)
     return rewards
 
