@@ -5,9 +5,10 @@ from vllm import LLM, SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
 import re
 import os
-FILE_PATH = "../data/gsm8k/train.jsonl"
+DATASET_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
 MODEL_NAME_OR_PATH = "Qwen/Qwen2.5-Math-1.5B"
+OUTPUT_PATH = "outputs/math_baseline.jsonl"
 
 def load_dataset(file_path):
     dataset = []
@@ -37,7 +38,6 @@ def generate_outputs(prompts, model):
     return model.generate(prompts, sampling_params)
 
 
-
 def extract_gt(ans: str) -> str:
     m = re.search(r"####\s*([^\n]+)", ans)
     return (m.group(1) if m else ans).strip()
@@ -45,14 +45,14 @@ def extract_gt(ans: str) -> str:
 def evaluate_vllm(
     vllm_model,
     reward_fn,
-    prompts,
+    dataset,
     eval_sampling_params,
-    dataset
     ) -> None:
     """
     Evaluate a language model on a list of prompts,
     compute evaluation metrics, and serialize results to disk.
     """
+    prompts = create_prompts(dataset, PROMPT_PATH, len(dataset))
     responses = vllm_model.generate(prompts, eval_sampling_params)
     rewards = []
     for i, response in enumerate(responses):
@@ -70,15 +70,16 @@ def serialize_to_disk(dataset, responses, rewards, output_path):
             rec = {
                 "id": i,
                 "question": ex["question"],
-                "gt_answer": ex["answer"],
-                "prompt": prompts[i],
+                "gt_raw_answer": ex["answer"],
+                "gt_answer": extract_gt(ex["answer"]),
                 "generation": out.outputs[0].text,
                 "metrics": score,  # e.g., {"format_reward": 1, "answer_reward": 0, "reward": 0}
+                "eval_sampling_params": eval_sampling_params,
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")            
 
 print("Loading dataset...")
-dataset=load_dataset(FILE_PATH)    
+dataset=load_dataset(DATASET_PATH)    
 print("Creating prompts...")
 prompts=create_prompts(dataset, PROMPT_PATH, 10)
 print("Creating model...")
@@ -92,4 +93,4 @@ rewards, responses=evaluate_vllm(model, r1_zero_reward_fn, prompts, eval_samplin
 if not os.path.exists("outputs"):
     os.makedirs("outputs")
 
-serialize_to_disk(dataset, responses, rewards, "outputs/math_baseline.jsonl")
+serialize_to_disk(dataset, responses, rewards, OUTPUT_PATH)
