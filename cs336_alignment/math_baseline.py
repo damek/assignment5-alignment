@@ -38,8 +38,12 @@ def generate_outputs(prompts, model):
         responses.append(response)
     return responses
 
+print("Loading dataset...")
 dataset=load_dataset(FILE_PATH)    
+print("Creating prompts...")
 prompts=create_prompts(dataset, PROMPT_PATH, 10)
+print("Creating model...")
 model=create_model(MODEL_NAME_OR_PATH)
+print("Generating outputs...")
 responses=generate_outputs(prompts, model)
 print(responses)
