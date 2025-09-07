@@ -3,6 +3,7 @@ import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from vllm import LLM, SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
+import re
 
 FILE_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
@@ -35,6 +36,12 @@ def generate_outputs(prompts, model):
     sampling_params.include_stop_str_in_output = True
     return model.generate(prompts, sampling_params)
 
+
+
+def extract_gt(ans: str) -> str:
+    m = re.search(r"####\s*([^\n]+)", ans)
+    return (m.group(1) if m else ans).strip()
+
 def evaluate_vllm(
     vllm_model,
     reward_fn,
@@ -50,7 +57,7 @@ def evaluate_vllm(
     rewards = []
     for i, response in enumerate(responses):
         pred = response.outputs[0].text
-        actual = dataset[i]["answer"]
+        actual = extract_gt(dataset[i]["answer"])
         print("Prediction: ", pred, "Actual: ", actual)
         reward = reward_fn(pred, actual)
         rewards.append(reward)
