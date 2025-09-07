@@ -2,7 +2,7 @@
 import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from vllm import LLM, SamplingParams
-from cs336_alignment.drgrpo_grader.r1_zero_reward_fn import r1_zero_reward_fn
+from drgrpo_grader import r1_zero_reward_fn
 
 FILE_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
