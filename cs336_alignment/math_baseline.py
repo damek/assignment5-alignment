@@ -46,7 +46,7 @@ print("Creating model...")
 model=create_model(MODEL_NAME_OR_PATH)
 print("Generating outputs...")
 responses=generate_outputs(prompts, model)
-print(responses)
+# print(responses)
 
 for output in responses:
     prompt = output.prompt
