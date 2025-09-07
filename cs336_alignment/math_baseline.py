@@ -64,7 +64,7 @@ def evaluate_vllm(
     return rewards, responses
 
 
-def serialize_to_disk(dataset, responses, rewards, output_path):
+def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_path):
     with open(output_path, "w", encoding="utf-8") as f:
         for i, (ex, out, score) in enumerate(zip(dataset, responses, rewards)):
             rec = {
@@ -93,4 +93,4 @@ rewards, responses=evaluate_vllm(model, r1_zero_reward_fn, prompts, eval_samplin
 if not os.path.exists("outputs"):
     os.makedirs("outputs")
 
-serialize_to_disk(dataset, responses, rewards, OUTPUT_PATH)
+serialize_to_disk(dataset, responses, rewards, eval_sampling_params, OUTPUT_PATH)
