@@ -37,7 +37,7 @@ def generate_outputs(prompts, model):
 
 def evaluate_vllm(
     vllm_model: LLM,
-    reward_fn: Callable[[str, str], dict[str, float]],
+    reward_fn,
     prompts: List[str],
     eval_sampling_params: SamplingParams,
     dataset: List[dict]
