@@ -1,5 +1,22 @@
 # CS336 Spring 2025 Assignment 5: Alignment
 
+
+## How to run
+
+```bash 
+runai submit cs336-dev \ -p <user> \  -i nvcr.io/nvidia/pytorch:25.06-py3 \  -g 1 --interactive --attach \  --command -- bash # replace -g 1 with -g 4 for 4 GPUs.
+git clone https://github.com/damek/assignment5-alignment.git
+pip install uv
+cd assignment5-alignment
+export PATH="$HOME/.local/bin:$PATH"
+uv sync
+uv venv
+source .venv/bin/activate
+uv sync
+```
+
+## Description
+
 For a full description of the assignment, see the assignment handout at
 [cs336_spring2025_assignment5_alignment.pdf](./cs336_spring2025_assignment5_alignment.pdf)
 
