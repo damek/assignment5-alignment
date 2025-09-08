@@ -215,7 +215,9 @@ def model_id():
         os.makedirs("../cs336_alignment/models/Qwen", exist_ok=True)
         model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Math-1.5B")
         tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Math-1.5B")
-        return model, tokenizer
+        # save the model and tokenizer
+        model.save_pretrained("../cs336_alignment/models/Qwen/Qwen2.5-Math-1.5B")
+        tokenizer.save_pretrained("../cs336_alignment/models/Qwen/Qwen2.5-Math-1.5B")
     return "../cs336_alignment/models/Qwen/Qwen2.5-Math-1.5B"
 
 
