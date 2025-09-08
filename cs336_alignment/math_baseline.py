@@ -98,10 +98,10 @@ def count_histogram(rows):
             histogram["format reward 0 and answer reward 0"] += 1
     return histogram
 
-def print_reward_0(rows, nb_rows=10):
+def print_format_reward_0(rows, nb_rows=10):
     count = 0
     for row in rows:
-        if row["metrics"]["format_reward"] == 0 and row["metrics"]["answer_reward"] == 0:
+        if row["metrics"]["format_reward"] == 0:
             print("Question: ", row["question"])
             print("Generation: ", row["generation"])
             print("Metrics: ", row["metrics"])
@@ -110,6 +110,20 @@ def print_reward_0(rows, nb_rows=10):
             count += 1
             if count >= nb_rows:
                 break
+
+def print_format_reward_1_answer_reward_0(rows, nb_rows=10):
+    count = 0
+    for row in rows:
+        if row["metrics"]["format_reward"] == 1 and row["metrics"]["answer_reward"] == 0:
+            print("Question: ", row["question"])
+            print("Generation: ", row["generation"])
+            print("Metrics: ", row["metrics"])
+            print("GT Answer: ", row["gt_answer"])
+            print("--------------------------------")
+            count += 1
+            if count >= nb_rows:
+                break
+
 
 def load_serialized_file(file_path):
     return [json.loads(line) for line in open(file_path, "r", encoding="utf-8")]
@@ -132,5 +146,8 @@ if not os.path.exists("outputs"):
 serialize_to_disk(dataset, responses, rewards, eval_sampling_params, OUTPUT_PATH)
 rows = load_serialized_file(OUTPUT_PATH)
 histogram = count_histogram(rows)
-print_reward_0(rows, 10)
+print("Printing format reward 0...")
+print_format_reward_0(rows, 10)
+print("Printing format reward 1 and answer reward 0...")
+print_format_reward_1_answer_reward_0(rows, 10)
 print(histogram)

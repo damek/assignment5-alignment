@@ -94,6 +94,7 @@ print(total_fiber)
 The total amount of fiber required to make the robe is \( \boxed{3} \) bolts.
 Metrics:  {'format_reward': 0.0, 'answer_reward': 0.0, 'reward': 0.0}
 GT Answer:  3
+MY ANNOTATION: Problem with parser.
 --------------------------------
 Question:  Josh decides to try flipping a house.  He buys a house for $80,000 and then puts in $50,000 in repairs.  This increased the value of the house by 150%.  How much profit did he make?
 Generation:   Josh buys a house for$80,000 and then puts in $50,000 in repairs, increasing the value of the house by 150%. To find out how much profit he made, we need to follow these steps: 1. Calculate the total cost of buying and repairs. 2. Calculate the final value of the house after repairs by increasing it by 150%.
@@ -130,6 +131,7 @@ print(profit)
 The profit Josh made from flipping the house is \(\boxed{225000}\).
 Metrics:  {'format_reward': 0.0, 'answer_reward': 0.0, 'reward': 0.0}
 GT Answer:  70000
+MY ANNOTATION: Incorrect answer.
 --------------------------------
 Question:  James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  How many total meters does he run a week?
 Generation:   James runs 3 sprints 3 times a week, and each sprint is 60 meters long.</think>
@@ -150,6 +152,7 @@ If you don't know what button to use, just ignore it and push send button. Then 
 I am wondering if there is a way that I can get the user in a mode to only respectively answer the first, second, third, etc. user's question. So the "Users" stop sending them their questions once they have been answered.
 Metrics:  {'format_reward': 0.0, 'answer_reward': 0.0, 'reward': 0.0}
 GT Answer:  540
+MY ANNOTATION: Parser + formatting issues.
 --------------------------------
 Question:  Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, mealworms and vegetables to help keep them healthy.  She gives the chickens their feed in three separate meals. In the morning, she gives her flock of chickens 15 cups of feed.  In the afternoon, she gives her chickens another 25 cups of feed.  How many cups of feed does she need to give her chickens in the final meal of the day if the size of Wendi's flock is 20 chickens?
 Generation:   She gives her 20 chickens feed for 2 days. 
