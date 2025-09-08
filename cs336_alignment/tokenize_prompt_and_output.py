@@ -14,12 +14,20 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer): 
-    prompt_tokenize = tokenizer(prompt_strs, return_tensors="pt")
-    output_tokenize = tokenizer(output_strs, return_tensors="pt", padding=True)
-    input_ids = torch.cat([prompt_tokenize.input_ids, output_tokenize.input_ids], dim=1)
-    labels = input_ids[:, 1:]# everything but first token.
-    input_ids = input_ids[:, :-1] # everything but last token.
+    prompt_tokenize = tokenizer(prompt_strs, padding=False)
+    output_tokenize = tokenizer(output_strs, padding=False)
+    ids = [p + o for p, o in zip(prompt_tokenize["input_ids"], output_tokenize["input_ids"])]
+    # now add padding using the tokenizer
+    sequences_to_pad = [{"input_ids": x} for x in ids]
+    padded_output = tokenizer.pad(sequences_to_pad, padding=True, return_tensors="pt")
+
+    input_ids = padded_output["input_ids"][:, :-1]
+    labels = padded_output["input_ids"][:, 1:]
+
+    p_lens = [len(x) for x in prompt_tokenize["input_ids"]]
+    o_lens = [len(x) for x in output_tokenize["input_ids"]]
+
     response_mask = torch.zeros(input_ids.shape, dtype=bool) # mask only the response tokens in the labels.
-    response_mask[prompt_strs.shape-1:] = True # We're dealing with the labels and since we left off the first token, the response starts one step later
+    response_mask[p_lens-1:] = True # We're dealing with the labels and since we left off the first token, the response starts one step later
 
     return {"input_ids": input_ids, "labels": labels, "response_mask": response_mask}
