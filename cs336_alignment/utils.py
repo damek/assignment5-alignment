@@ -1,5 +1,7 @@
 import torch
 import torch.nn.functional as F
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
 
 # we're given logits, which means 
 ##
@@ -13,3 +15,18 @@ def compute_entropy(logits: torch.Tensor) -> torch.Tensor:
     log_p = F.log_softmax(logits, dim=-1) ## hahaha cheating
     return -torch.sum(log_p * p, dim=-1)
     
+
+def get_response_log_probs(
+    model: PreTrainedModel,
+    input_ids: torch.Tensor,
+    labels: torch.Tensor,
+    return_token_entropy: bool = False,
+    ) -> dict[str, torch.Tensor]:
+
+    logits = model(input_ids, labels=labels).logits
+    log_probs = F.log_softmax(logits, dim=-1)
+    if return_token_entropy:
+        entropy = compute_entropy(logits)
+        return log_probs, entropy
+    else:
+        return log_probs
