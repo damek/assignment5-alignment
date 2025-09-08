@@ -25,9 +25,8 @@ def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer):
     labels = padded_output["input_ids"][:, 1:]
 
     p_lens = [len(x) for x in prompt_tokenize["input_ids"]]
-    o_lens = [len(x) for x in output_tokenize["input_ids"]]
+    indices = torch.arange(input_ids.shape[1], device=labels.device).unsqueeze(0)
+    response_mask = indices >= p_lens-1
 
-    response_mask = torch.zeros(input_ids.shape, dtype=bool) # mask only the response tokens in the labels.
-    response_mask[p_lens-1:] = True # We're dealing with the labels and since we left off the first token, the response starts one step later
 
     return {"input_ids": input_ids, "labels": labels, "response_mask": response_mask}
