@@ -23,8 +23,9 @@ def get_response_log_probs(
     return_token_entropy,
     ) -> dict[str, torch.Tensor]:
 
-    logits = model(input_ids, labels=labels).logits
+    logits = model(input_ids).logits
     log_probs = F.log_softmax(logits, dim=-1)
+    log_probs = log_probs[:, labels]
     if return_token_entropy:
         entropy = compute_entropy(logits)
         return {"log_probs": log_probs, "token_entropy": entropy}
