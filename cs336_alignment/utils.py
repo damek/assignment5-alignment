@@ -27,8 +27,7 @@ def get_response_log_probs(
     log_probs = F.log_softmax(logits, dim=-1)
     print("log_probs.shape", log_probs.shape)
     
-    log_probs = log_probs[:, labels]
-    log_probs = log_probs.gather(dim=-1, index=labels)
+    log_probs = log_probs.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
 
     if return_token_entropy:
         entropy = compute_entropy(logits)
