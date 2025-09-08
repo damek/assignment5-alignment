@@ -5,6 +5,8 @@ from vllm import LLM, SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
 import re
 import os
+from dataclasses import asdict
+
 DATASET_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
 MODEL_NAME_OR_PATH = "Qwen/Qwen2.5-Math-1.5B"
@@ -60,7 +62,7 @@ def evaluate_vllm(
     for i, response in enumerate(responses):
         pred = response.outputs[0].text
         actual = extract_gt(dataset[i]["answer"])
-        print("Prediction: ", pred, "Actual: ", actual)
+        # print("Prediction: ", pred, "Actual: ", actual)
         reward = reward_fn(pred, actual)
         rewards.append(reward)
     return rewards, responses
@@ -68,6 +70,8 @@ def evaluate_vllm(
 
 def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_path):
     with open(output_path, "w", encoding="utf-8") as f:
+        # reformat eval sampling params
+        eval_sampling_params = asdict(eval_sampling_params)
         for i, (ex, out, score) in enumerate(zip(dataset, responses, rewards)):
             rec = {
                 "id": i,
