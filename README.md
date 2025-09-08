@@ -9,6 +9,8 @@
     - Code [tokenize_prompt_and_output.py](./cs336_alignment/tokenize_prompt_and_output.py)
 - Compute entropy: compute the entropy of the logits
     - Code [utils.py](./cs336_alignment/utils.py)
+- Get response log probs: get the log probs of the response given the prompt
+    - Code [utils.py](./cs336_alignment/utils.py)
 
 
 ## How to run
