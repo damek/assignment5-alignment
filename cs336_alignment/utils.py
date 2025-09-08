@@ -26,6 +26,7 @@ def get_response_log_probs(
     logits = model(input_ids).logits
     log_probs = F.log_softmax(logits, dim=-1)
     log_probs = log_probs[:, labels]
+    print("log_probs.shape", log_probs.shape)
     if return_token_entropy:
         entropy = compute_entropy(logits)
         return {"log_probs": log_probs, "token_entropy": entropy}
