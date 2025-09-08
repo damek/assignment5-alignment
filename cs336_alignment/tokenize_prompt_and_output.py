@@ -10,7 +10,7 @@ def download_model_and_tokenizer():
     tokenizer = AutoTokenizer.from_pretrained("/data/a5-alignment/models/Qwen2.5-Math-1.5B")
     return model, tokenizer 
 
-model, tokenizer = download_model_and_tokenizer()
+# model, tokenizer = download_model_and_tokenizer()
 
 
 def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer : PreTrainedTokenizerBase): 
