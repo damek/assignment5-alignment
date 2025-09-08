@@ -5,7 +5,7 @@ import torch.nn.functional as F
 ##
 # p = softmax(logits)
 # which means log(p) = logits - log(sum(exp(logits)))
-## we need to allow the tensor of size [B, Vocab]
+## we need to allow the tensor of size [..., Vocab]
 
 
 def compute_entropy(logits: torch.Tensor) -> torch.Tensor:
