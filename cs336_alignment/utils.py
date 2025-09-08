@@ -54,7 +54,7 @@ def sft_microbatch_train_step(
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 
     # loss = F.nll_loss(policy_log_probs, reduction="none") # nice learned about reduction
-    loss = masked_normalize(loss, response_mask, normalize_constant)
+    loss = masked_normalize(log_probs, response_mask, normalize_constant)
     loss = loss.mean()
     loss.backward()
 
