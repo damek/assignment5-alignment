@@ -102,9 +102,9 @@ def print_reward_0(rows, nb_rows=10):
     count = 0
     for row in rows:
         if row["metrics"]["format_reward"] == 0 and row["metrics"]["answer_reward"] == 0:
-            print(row["question"])
-            print(row["generation"])
-            print(row["metrics"])
+            print("Question: ", row["question"])
+            print("Generation: ", row["generation"])
+            print("Metrics: ", row["metrics"])
             print("--------------------------------")
             count += 1
             if count >= nb_rows:

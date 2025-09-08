@@ -36,9 +36,25 @@ Why? What about in (at least 10) cases where format reward is 1 but answer rewar
 Deliverable: Commentary on the model and reward function performance, including examples
 of each category.
 
+
+For the test file of gsm8k ([../../data/gsm8k/test.jsonl](../../data/gsm8k/test.jsonl)), the histogram is:
+- correct with both format and answer reward 1: 31
+- format reward 1 and answer reward 0: 227
+- format reward 0 and answer reward 0: 1061
+
+This uses: 
+- temperature: 1.0
+- top_p: 1.0
+- max_tokens: 1024
+- stop: ["</answer>"]
+- include_stop_str_in_output: True
+
+
+
+
+
 ## Question (c)
 
 (c) How well does the Qwen 2.5 Math 1.5B zero-shot baseline perform on MATH?
 Deliverable: 1-2 sentences with evaluation metrics.
 
-{'correct with both format and answer reward 1': 215, 'format reward 1 and answer reward 0': 1226, 'format reward 0 and answer reward 0': 6032}
