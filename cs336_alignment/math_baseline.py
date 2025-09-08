@@ -5,8 +5,7 @@ from vllm import LLM, SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
 import re
 import os
-from dataclasses import asdict
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+
 
 
 DATASET_PATH = "../data/gsm8k/train.jsonl"
@@ -72,8 +71,6 @@ def evaluate_vllm(
 
 def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_path):
     with open(output_path, "w", encoding="utf-8") as f:
-        # reformat eval sampling params
-        eval_sampling_params = asdict(eval_sampling_params)
         for i, (ex, out, score) in enumerate(zip(dataset, responses, rewards)):
             rec = {
                 "id": i,
@@ -82,7 +79,6 @@ def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_
                 "gt_answer": extract_gt(ex["answer"]),
                 "generation": out.outputs[0].text,
                 "metrics": score,  # e.g., {"format_reward": 1, "answer_reward": 0, "reward": 0}
-                "eval_sampling_params": eval_sampling_params,
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")            
 
