@@ -27,6 +27,6 @@ def get_response_log_probs(
     log_probs = F.log_softmax(logits, dim=-1)
     if return_token_entropy:
         entropy = compute_entropy(logits)
-        return log_probs, entropy
+        return {"log_probs": log_probs, "token_entropy": entropy}
     else:
-        return log_probs
+        return {"log_probs": log_probs}
