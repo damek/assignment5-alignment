@@ -6,6 +6,8 @@ from drgrpo_grader import r1_zero_reward_fn
 import re
 import os
 from dataclasses import asdict
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+
 
 DATASET_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
@@ -32,7 +34,7 @@ def create_prompts(dataset, prompt_path, number_of_prompts=None):
     return prompts
 
 def create_model(model_name_or_path):
-    model = LLM(model=model_name_or_path)
+    model = LLM(model=model_name_or_path, tensor_parallel_size=2)
     return model
 
 def generate_outputs(prompts, model):
