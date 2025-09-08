@@ -1,5 +1,11 @@
 # CS336 Spring 2025 Assignment 5: Alignment
 
+## Problems
+
+- Math baseline: run qwen 2.5 1.5B on gsm8k
+    - Code [math_baseline.py](./cs336_alignment/math_baseline.py)
+    - Results [math_baseline.md](./cs336_alignment/outputs/math_baseline.md)
+
 
 ## How to run
 
