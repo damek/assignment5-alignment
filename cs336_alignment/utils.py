@@ -28,6 +28,8 @@ def get_response_log_probs(
     print("log_probs.shape", log_probs.shape)
     
     log_probs = log_probs[:, labels]
+    log_probs = log_probs.gather(dim=-1, index=labels)
+
     if return_token_entropy:
         entropy = compute_entropy(logits)
         return {"log_probs": log_probs, "token_entropy": entropy}
