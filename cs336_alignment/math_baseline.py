@@ -80,13 +80,6 @@ def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")            
 
-# Run your evaluation script on Qwen 2.5 Math 1.5B. How many model generations fall into each
-# of the following categories: (1) correct with both format and answer reward 1, (2) format reward
-# 1 and answer reward 0, (3) format reward 0 and answer reward 0? Observing at least 10 cases
-# where format reward is 0, do you think the issue is with the base model’s output, or the parser?
-# Why? What about in (at least 10) cases where format reward is 1 but answer reward is 0?
-
-# we're going to load the serialized file and then do the histogram count. 
 def count_histogram(rows):
     histogram = {
         "correct with both format and answer reward 1": 0,
@@ -116,7 +109,7 @@ print("Evaluating...")
 eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
 eval_sampling_params.stop = ["</answer>"]
 eval_sampling_params.include_stop_str_in_output = True
-rewards, responses=evaluate_vllm(model, r1_zero_reward_fn, prompts, eval_sampling_params, dataset)
+rewards, responses=evaluate_vllm(model, r1_zero_reward_fn, dataset, eval_sampling_params)
 # mkdir outputs if it doesn't exist
 if not os.path.exists("outputs"):
     os.makedirs("outputs")
