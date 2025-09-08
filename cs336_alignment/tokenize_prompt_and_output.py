@@ -1,14 +1,14 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-def download_model_and_tokenizer():
-    model = AutoModelForCausalLM.from_pretrained(
-        "/data/a5-alignment/models/Qwen2.5-Math-1.5B",
-        torch_dtype=torch.bfloat16,
-        attn_implementation="flash_attention_2",
-    )
-    tokenizer = AutoTokenizer.from_pretrained("/data/a5-alignment/models/Qwen2.5-Math-1.5B")
-    return model, tokenizer 
+# def download_model_and_tokenizer():
+#     model = AutoModelForCausalLM.from_pretrained(
+#         "/data/a5-alignment/models/Qwen2.5-Math-1.5B",
+#         torch_dtype=torch.bfloat16,
+#         attn_implementation="flash_attention_2",
+#     )
+#     tokenizer = AutoTokenizer.from_pretrained("/data/a5-alignment/models/Qwen2.5-Math-1.5B")
+#     return model, tokenizer 
 
 # model, tokenizer = download_model_and_tokenizer()
 
