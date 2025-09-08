@@ -18,9 +18,11 @@ def load_dataset(file_path):
             dataset.append(data)
     return dataset
 
-def create_prompts(dataset, prompt_path, number_of_prompts):
+def create_prompts(dataset, prompt_path, number_of_prompts=None):
     prompts = []
     get_base_prompt = open(prompt_path, "r").read()
+    if number_of_prompts is None:
+        number_of_prompts = len(dataset)
     for data in dataset[:number_of_prompts]:    
         prompt = get_base_prompt
         prompt = prompt.format(question=data["question"])
@@ -78,10 +80,36 @@ def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")            
 
+# Run your evaluation script on Qwen 2.5 Math 1.5B. How many model generations fall into each
+# of the following categories: (1) correct with both format and answer reward 1, (2) format reward
+# 1 and answer reward 0, (3) format reward 0 and answer reward 0? Observing at least 10 cases
+# where format reward is 0, do you think the issue is with the base model’s output, or the parser?
+# Why? What about in (at least 10) cases where format reward is 1 but answer reward is 0?
+
+# we're going to load the serialized file and then do the histogram count. 
+def count_histogram(rows):
+    histogram = {
+        "correct with both format and answer reward 1": 0,
+        "format reward 1 and answer reward 0": 0,
+        "format reward 0 and answer reward 0": 0,
+    }
+
+    for row in rows:
+        if row["metrics"]["format_reward"] == 1 and row["metrics"]["answer_reward"] == 1:
+            histogram["correct with both format and answer reward 1"] += 1
+        elif row["metrics"]["format_reward"] == 1 and row["metrics"]["answer_reward"] == 0:
+            histogram["format reward 1 and answer reward 0"] += 1
+        elif row["metrics"]["format_reward"] == 0 and row["metrics"]["answer_reward"] == 0:
+            histogram["format reward 0 and answer reward 0"] += 1
+    return histogram
+
+def load_serialized_file(file_path):
+    return [json.loads(line) for line in open(file_path, "r", encoding="utf-8")]
+
 print("Loading dataset...")
 dataset=load_dataset(DATASET_PATH)    
 print("Creating prompts...")
-prompts=create_prompts(dataset, PROMPT_PATH, 10)
+prompts=create_prompts(dataset, PROMPT_PATH)
 print("Creating model...")
 model=create_model(MODEL_NAME_OR_PATH)
 print("Evaluating...")
@@ -94,3 +122,6 @@ if not os.path.exists("outputs"):
     os.makedirs("outputs")
 
 serialize_to_disk(dataset, responses, rewards, eval_sampling_params, OUTPUT_PATH)
+rows = load_serialized_file(OUTPUT_PATH)
+histogram = count_histogram(rows)
+print(histogram)
