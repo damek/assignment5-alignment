@@ -14,7 +14,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer): 
-    prompt_tokenize = tokenizer(prompt_strs, return_tensors="pt")
+    prompt_tokenize = tokenizer(prompt_strs, return_tensors="pt", padding=True)
     output_tokenize = tokenizer(output_strs, return_tensors="pt")
     input_ids = torch.cat([prompt_tokenize.input_ids, output_tokenize.input_ids], dim=1)
     labels = input_ids[:, 1:]# everything but first token.
