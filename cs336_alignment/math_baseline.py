@@ -1,11 +1,9 @@
-# first load the data set from ../data/gsm8k/gsm8k-test.jsonl
 import json
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from vllm import LLM, SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
 import re
 import os
-
 
 
 DATASET_PATH = "../data/gsm8k/test.jsonl"
@@ -63,7 +61,6 @@ def evaluate_vllm(
     for i, response in enumerate(responses):
         pred = response.outputs[0].text
         actual = extract_gt(dataset[i]["answer"])
-        # print("Prediction: ", pred, "Actual: ", actual)
         reward = reward_fn(pred, actual)
         rewards.append(reward)
     return rewards, responses
@@ -78,7 +75,7 @@ def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_
                 "gt_raw_answer": ex["answer"],
                 "gt_answer": extract_gt(ex["answer"]),
                 "generation": out.outputs[0].text,
-                "metrics": score,  # e.g., {"format_reward": 1, "answer_reward": 0, "reward": 0}
+                "metrics": score,  
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")            
 
@@ -139,7 +136,6 @@ eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=102
 eval_sampling_params.stop = ["</answer>"]
 eval_sampling_params.include_stop_str_in_output = True
 rewards, responses=evaluate_vllm(model, r1_zero_reward_fn, dataset, eval_sampling_params)
-# mkdir outputs if it doesn't exist
 if not os.path.exists("outputs"):
     os.makedirs("outputs")
 
