@@ -19,7 +19,7 @@ def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer):
     ids = [p + o for p, o in zip(prompt_tokenize["input_ids"], output_tokenize["input_ids"])]
     # now add padding using the tokenizer
     sequences_to_pad = [{"input_ids": x} for x in ids]
-    padded_output = tokenizer.pad(sequences_to_pad, padding=True, return_tensors="pt")
+    padded_output = tokenizer.pad(sequences_to_pad, padding=False, return_tensors="pt")
 
     input_ids = padded_output["input_ids"][:, :-1]
     labels = padded_output["input_ids"][:, 1:]
