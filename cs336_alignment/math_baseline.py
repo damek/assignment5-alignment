@@ -105,6 +105,7 @@ def print_reward_0(rows, nb_rows=10):
             print("Question: ", row["question"])
             print("Generation: ", row["generation"])
             print("Metrics: ", row["metrics"])
+            print("GT Answer: ", row["gt_answer"])
             print("--------------------------------")
             count += 1
             if count >= nb_rows:
