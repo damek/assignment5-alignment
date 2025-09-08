@@ -53,7 +53,7 @@ def sft_microbatch_train_step(
     normalize_constant: float = 1.0,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 
-    loss = F.cross_entropy(policy_log_probs, response_mask, reduction="none") # nice learned about reduction
+    loss = F.cross_entropy(policy_log_probs, reduction="none") # nice learned about reduction
     loss = masked_normalize(loss, response_mask, normalize_constant)
     loss = loss.mean()
     loss.backward()
