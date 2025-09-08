@@ -34,7 +34,7 @@ def create_prompts(dataset, prompt_path, number_of_prompts=None):
     return prompts
 
 def create_model(model_name_or_path):
-    model = LLM(model=model_name_or_path, tensor_parallel_size=2)
+    model = LLM(model=model_name_or_path)
     return model
 
 def generate_outputs(prompts, model):
