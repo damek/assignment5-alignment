@@ -210,14 +210,10 @@ def output_strs():
 
 @pytest.fixture
 def model_id():
-    # if the model is not on the machine, download it from hugging face
-    # there will be issues if run relatively, so we need to download it to the correct path
-    
     if not os.path.exists("../cs336_alignment/models/Qwen/Qwen2.5-Math-1.5B"):
         os.makedirs("../cs336_alignment/models/Qwen", exist_ok=True)
         model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Math-1.5B")
         tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Math-1.5B")
-        # save the model and tokenizer
         model.save_pretrained("../cs336_alignment/models/Qwen/Qwen2.5-Math-1.5B")
         tokenizer.save_pretrained("../cs336_alignment/models/Qwen/Qwen2.5-Math-1.5B")
     return "../cs336_alignment/models/Qwen/Qwen2.5-Math-1.5B"
