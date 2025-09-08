@@ -17,10 +17,10 @@ def compute_entropy(logits: torch.Tensor) -> torch.Tensor:
     
 
 def get_response_log_probs(
-    model: PreTrainedModel,
-    input_ids: torch.Tensor,
-    labels: torch.Tensor,
-    return_token_entropy: bool = False,
+    model,
+    input_ids,
+    labels,
+    return_token_entropy,
     ) -> dict[str, torch.Tensor]:
 
     logits = model(input_ids, labels=labels).logits
