@@ -8,7 +8,7 @@ from torch import Tensor
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizerBase
 from cs336_alignment.tokenize_prompt_and_output import tokenize_prompt_and_output
-
+from cs336_alignment.utils import compute_entropy
 
 def run_tokenize_prompt_and_output(
     prompt_strs: list[str],
