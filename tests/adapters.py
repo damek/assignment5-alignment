@@ -33,7 +33,7 @@ def run_tokenize_prompt_and_output(
                 a mask on the response tokens in `labels`.
     """
     print("Running tokenize_prompt_and_output")
-    return run_tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer)
+    return tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer)
 
 
 def run_compute_group_normalized_rewards(

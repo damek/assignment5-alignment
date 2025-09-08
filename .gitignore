@@ -2,6 +2,7 @@
 models/
 data/
 secrets.md
+.DS_Store
 
 nav
 tags
