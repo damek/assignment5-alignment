@@ -24,7 +24,7 @@ def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer):
     input_ids = padded_output["input_ids"][:, :-1]
     labels = padded_output["input_ids"][:, 1:]
 
-    p_lens = torch.tensor([len(x) for x in prompt_tokenize["input_ids"]])
+    p_lens = torch.tensor([len(x) for x in prompt_tokenize["input_ids"]], dtype=torch.long, device=labels.device).unsqueeze(1)
     indices = torch.arange(input_ids.shape[1], device=labels.device).unsqueeze(0)
     response_mask = indices >= p_lens-1
 
