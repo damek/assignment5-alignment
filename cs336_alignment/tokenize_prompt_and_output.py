@@ -28,5 +28,7 @@ def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer):
     indices = torch.arange(labels.shape[1], device=labels.device).unsqueeze(0)
     response_mask = indices >= p_lens
 
+    label_attn = padded_output["attention_mask"][:, 1:].bool()
+    response_mask = response_mask & label_attn
 
     return {"input_ids": input_ids, "labels": labels, "response_mask": response_mask}
