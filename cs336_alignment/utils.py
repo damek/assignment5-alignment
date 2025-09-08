@@ -25,7 +25,6 @@ def get_response_log_probs(
 
     logits = model(input_ids).logits
     log_probs = F.log_softmax(logits, dim=-1)
-    print("log_probs.shape", log_probs.shape)
     
     log_probs = log_probs.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
 
@@ -34,3 +33,15 @@ def get_response_log_probs(
         return {"log_probs": log_probs, "token_entropy": entropy}
     else:
         return {"log_probs": log_probs}
+
+def masked_normalize(
+    tensor: torch.Tensor,
+    mask: torch.Tensor,
+    normalize_constant: float,
+    dim: int | None = None,
+    ) -> torch.Tensor:
+
+    if dim is not None 
+        return torch.sum(tensor * mask, dim=dim) / normalize_constant
+    else:
+        return torch.sum(tensor * mask) / normalize_constant
