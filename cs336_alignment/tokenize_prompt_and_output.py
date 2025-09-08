@@ -28,6 +28,7 @@ def tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer):
     indices = torch.arange(labels.shape[1], device=labels.device).unsqueeze(0)
     response_mask = indices >= p_lens
 
+    # This line is very important. You need to also mask out the padded posistions. So you'll need to and the response mask with the attention mask.
     label_attn = padded_output["attention_mask"][:, 1:].bool()
     response_mask = response_mask & label_attn
 
