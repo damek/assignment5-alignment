@@ -45,3 +45,20 @@ def masked_normalize(
         return torch.sum(tensor * mask, dim=dim) / normalize_constant
     else:
         return torch.sum(tensor * mask) / normalize_constant
+
+def sft_microbatch_train_step(
+    policy_log_probs: torch.Tensor,
+    response_mask: torch.Tensor,
+    gradient_accumulation_steps: int,
+    normalize_constant: float = 1.0,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+
+    loss = F.cross_entropy(policy_log_probs, response_mask, reduction="none") # nice learned about reduction
+    loss = masked_normalize(loss, response_mask, normalize_constant)
+    loss = loss.mean()
+    loss.backward()
+
+    if gradient_accumulation_steps > 1:
+        loss = loss / gradient_accumulation_steps
+
+    return loss, {"loss": loss}
