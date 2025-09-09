@@ -86,8 +86,9 @@ for epoch in range(NUM_EPOCHS):
 
     # compute a random shuffle
     shuffle_indices = torch.randperm(len(train_dataset))
+    ema_loss = float("inf")
     for i in range(len(train_dataset) // BATCH_SIZE):
-        print(f"Epoch {epoch}, Batch {i}/{len(train_dataset) // BATCH_SIZE}")
+        print(f"Epoch {epoch}, Batch {i}/{len(train_dataset) // BATCH_SIZE}, EMA Loss: {ema_loss:.4f}")
         # Compute a batch of training examples
         batch_indices = shuffle_indices[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
         input_ids = train_input_ids[batch_indices]
@@ -99,6 +100,10 @@ for epoch in range(NUM_EPOCHS):
 
         # Compute the loss
         loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS)
+        if i == 0:
+            ema_loss = loss.item()
+        else:
+            ema_loss = 0.9 * ema_loss + 0.1 * loss.item()
         if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
             optimizer.step()
             optimizer.zero_grad()
