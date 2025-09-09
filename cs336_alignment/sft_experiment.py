@@ -38,11 +38,14 @@ device_hf = "cuda:0"
 # load hf model 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(model_id).to(device_hf)
+print("Model Device: ", model.device)
 
 # load vllm model
 print("Loading vllm model...")
 vllm_model = vllm_utils.init_vllm(model_id, device_vllm, SEED)
+print("VLLM Model Device: ", vllm_model.device)
 
+print("Loading model...")
 print("Loading dataset...")
 # load dataset
 train_dataset = utils.load_dataset(TRAIN_DATASET_PATH)

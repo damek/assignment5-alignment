@@ -24,6 +24,7 @@ def init_vllm(model_id, device, seed, gpu_memory_utilization=0.85):
             dtype=torch.bfloat16,
             enable_prefix_caching=True,
             gpu_memory_utilization=gpu_memory_utilization,
+            tensor_parallel_size=1,
             )
 
 def load_policy_into_vllm_instance(policy, llm):
