@@ -10,18 +10,33 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 # HARDCODED STUFF
-TRAIN_DATASET_PATH = "../data/gsm8k/test.jsonl"
+TRAIN_DATASET_PATH = "../data/gsm8k/train.jsonl"
 EVAL_DATASET_PATH = "../data/gsm8k/test.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
 OUTPUT_PATH = "outputs/sft_experiment.jsonl"
 
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--train_dataset_path", type=str, default="../data/gsm8k/train.jsonl")
+    parser.add_argument("--eval_dataset_path", type=str, default="../data/gsm8k/test.jsonl")
+    parser.add_argument("--prompt_path", type=str, default="prompts/r1_zero.prompt")
+    parser.add_argument("--output_path", type=str, default="outputs/sft_experiment.jsonl")
+    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--gradient_accumulation_steps", type=int, default=2)
+    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--num_epochs", type=int, default=1)
+    return parser.parse_args()
 ## later put these into argparse.
+
+args = get_args()
+
 SEED = 42
-BATCH_SIZE = 2
-GRADIENT_ACCUMULATION_STEPS = 2
-LR = 1e-4
-WARMUP_STEPS = 100
-NUM_EPOCHS = 1
+BATCH_SIZE = args.batch_size
+GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
+LR = args.lr
+# WARMUP_STEPS = args.warmup_steps
+NUM_EPOCHS = args.num_epochs
 WANDB_PROJECT = "sft-experiment"
 
 wandb.init(project="sft-experiment") 
@@ -66,13 +81,6 @@ train_labels = train_dataset_tokenized["labels"].to(device_hf)
 train_response_mask = train_dataset_tokenized["response_mask"].to(device_hf)
 
 # check the eval:    
-with torch.no_grad():
-    vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
-    print("model device after load into vllm ", model.device)
-    log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=BATCH_SIZE)
-    wandb.log(log_generations_dict)
-    histogram = utils.count_histogram(log_generations_dict["examples"])
-    print("histogram: ", histogram)
 
 for epoch in range(NUM_EPOCHS):
 
