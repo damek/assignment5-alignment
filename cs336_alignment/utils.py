@@ -251,6 +251,9 @@ def log_generations(
 
     # Compute token entropy
     with torch.no_grad():
+        input_ids = input_ids.to(hf_model.device)
+        labels = labels.to(hf_model.device)
+        response_mask = response_mask.to(hf_model.device)
         logits = hf_model(input_ids).logits
         token_entropy = compute_entropy(logits)
         tok_counts = response_mask.sum(dim=-1)
