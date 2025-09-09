@@ -11,7 +11,8 @@
     - Code [utils.py](./cs336_alignment/utils.py)
 - Get response log probs: get the log probs of the response given the prompt
     - Code [utils.py](./cs336_alignment/utils.py)
-
+- SFT microbatch train step: compute the policy gradient loss and backprop its gradients for a microbatch.
+    - Code [utils.py](./cs336_alignment/utils.py)
 
 ## How to run
 
