@@ -87,8 +87,11 @@ for epoch in range(NUM_EPOCHS):
     # compute a random shuffle
     shuffle_indices = torch.randperm(len(train_dataset))
     ema_loss = float("inf")
+    ema_reward = float("inf")
+    ema_format_reward = float("inf")
     for i in range(len(train_dataset) // BATCH_SIZE):
-        print(f"Epoch {epoch}, Batch {i}/{len(train_dataset) // BATCH_SIZE}, EMA Loss: {ema_loss:.4f}")
+        print(f"Epoch {epoch}, Batch {i}/{len(train_dataset) // BATCH_SIZE}")
+        print(f"EMA Loss: {ema_loss:.4f}, EMA Reward: {ema_reward:.4f}, EMA Format Reward: {ema_format_reward:.4f}")
         # Compute a batch of training examples
         batch_indices = shuffle_indices[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
         input_ids = train_input_ids[batch_indices]
@@ -97,6 +100,13 @@ for epoch in range(NUM_EPOCHS):
 
         # Compute the policy log probs
         policy_log_probs = utils.get_response_log_probs(model, input_ids, labels, return_token_entropy=False)["log_probs"]
+        rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, train_dataset_r1_zero[batch_indices], eval_sampling_params)
+        if i == 0:
+            ema_reward = rewards["reward"]
+            ema_format_reward = rewards["format_reward"]
+        else:
+            ema_reward = 0.9 * ema_reward + 0.1 * rewards["reward"]
+            ema_format_reward = 0.9 * ema_format_reward + 0.1 * rewards["format_reward"]
 
         # Compute the loss
         loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS)
