@@ -108,11 +108,11 @@ for epoch in range(NUM_EPOCHS):
         batch = [train_dataset_r1_zero[i] for i in idx] # batch is a list of dictionaries
         rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, batch, eval_sampling_params)
         if i == 0:
-            ema_reward = rewards["reward"]
-            ema_format_reward = rewards["format_reward"]
+            ema_reward = torch.tensor([x["reward"] for x in rewards]).sum() 
+            ema_format_reward = torch.tensor([x["format_reward"] for x in rewards]).sum()
         else:
-            ema_reward = 0.9 * ema_reward + 0.1 * rewards["reward"]
-            ema_format_reward = 0.9 * ema_format_reward + 0.1 * rewards["format_reward"]
+            ema_reward = 0.9 * ema_reward + 0.1 * torch.tensor([x["reward"] for x in rewards]).sum()
+            ema_format_reward = 0.9 * ema_format_reward + 0.1 * torch.tensor([x["format_reward"] for x in rewards]).sum()   
 
         # Compute the loss
         loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS)
