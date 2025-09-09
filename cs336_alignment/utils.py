@@ -123,12 +123,12 @@ def evaluate_vllm(
     compute evaluation metrics, and serialize results to disk.
     """
     prompts = [prompt["prompt"] for prompt in prompts]
+    answers = [prompt["answer"] for prompt in prompts]
     responses = vllm_model.generate(prompts, eval_sampling_params)
     rewards = []
     for i, response in enumerate(responses):
         pred = response.outputs[0].text
-        actual = prompts[i]["answer"]
-        reward = reward_fn(pred, actual)
+        reward = reward_fn(pred, answers[i])
         rewards.append(reward)
     return rewards, responses
 
