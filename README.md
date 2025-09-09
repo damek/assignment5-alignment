@@ -6,7 +6,7 @@
     - Code [math_baseline.py](./cs336_alignment/math_baseline.py)
     - Results [math_baseline.md](./cs336_alignment/outputs/math_baseline.md)
 - Tokenize prompt and output: tokenize the prompt and output strings, and construct a mask that is 1 for the response tokens and 0 for other tokens (prompt or padding).
-    - Code [tokenize_prompt_and_output.py](./cs336_alignment/tokenize_prompt_and_output.py)
+    - Code [utils.py](./cs336_alignment/utils.py)
 - Compute entropy: compute the entropy of the logits
     - Code [utils.py](./cs336_alignment/utils.py)
 - Get response log probs: get the log probs of the response given the prompt
