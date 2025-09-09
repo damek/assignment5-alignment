@@ -260,7 +260,7 @@ def log_generations(
         logits=hf_model(input_ids_batch).logits
         token_entropy = compute_entropy(logits)
         tok_counts = response_mask_batch.sum(dim=-1)
-        avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch) / tok_counts).sum(dim=-1)
+        avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/tok_counts
 
     # Compute response length
     response_length = ((response_mask.sum(dim=-1) / tok_counts).tolist())
