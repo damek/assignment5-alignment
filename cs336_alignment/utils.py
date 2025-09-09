@@ -210,31 +210,40 @@ def log_generations(
     temperature=1.0,
     top_p=1.0,
 ):
+    # Create proomps from dataset
     prompts = create_prompts(dataset, PROMPT_PATH, len(dataset))
     gt_answers = [extract_gt(data["answer"]) for data in dataset]
 
+    # Sample generations from VLLM Model
     eval_sampling_params = SamplingParams(temperature=temperature, top_p=top_p, max_tokens=max_tokens)
     eval_sampling_params.stop = ["</answer>"]
     eval_sampling_params.include_stop_str_in_output = True
     rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, dataset, eval_sampling_params)
     responses = [response.outputs[0].text for response in responses]
 
+    # Tokenize prompt and output
     tokenized_dict = tokenize_prompt_and_output(prompts, responses, tokenizer)
     input_ids, labels, response_mask = tokenized_dict["input_ids"], tokenized_dict["labels"], tokenized_dict["response_mask"]
 
-    logits = hf_model(input_ids).logits
-    token_entropy = compute_entropy(logits)
-    tok_counts = response_mask.sum(dim=-1)
-    avg_entropy = ((token_entropy*response_mask) / tok_counts).tolist()
+    # Compute token entropy
+    with torch.no_grad():
+        logits = hf_model(input_ids).logits
+        token_entropy = compute_entropy(logits)
+        tok_counts = response_mask.sum(dim=-1)
+        avg_entropy = ((token_entropy*response_mask) / tok_counts).tolist()
 
+    # Compute response length
     response_length = ((response_mask.sum(dim=-1) / tok_counts).tolist())
+    # Compute which samples are correct
     is_correct = [int(r["reward"] == 1) for r in rewards]
     L = torch.tensor(response_length)
     C = torch.tensor(is_correct)
+    # compute stats
     avg_len = L.mean().item()
     correct_response_length = (L[C]).mean().item() if C.any() else float("nan")
     incorrect_response_length = (L[~C]).mean().item() if (~C).any() else float("nan")
 
+    # Create output dictionary
     out = []
     for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy, resp_lens):
         out.append({
@@ -249,8 +258,8 @@ def log_generations(
     return {
         "examples": out,
         "averages": {
-            "avg_response_length": float(avg_len_all),
-            "avg_response_length_correct": float(avg_len_correct),
-            "avg_response_length_incorrect": float(avg_len_incorrect),
+            "avg_response_length": float(avg_len),
+            "avg_response_length_correct": float(correct_response_length),
+            "avg_response_length_incorrect": float(incorrect_response_length),
         },
     }
