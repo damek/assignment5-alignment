@@ -41,8 +41,10 @@ tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(model_id).to(device_hf)
 
 # load vllm model
+print("Loading vllm model...")
 vllm_model = vllm_utils.init_vllm(model_id, device_vllm, SEED)
 
+print("Loading dataset...")
 # load dataset
 train_dataset = utils.load_dataset(TRAIN_DATASET_PATH)
 eval_dataset = utils.load_dataset(EVAL_DATASET_PATH)
@@ -66,6 +68,7 @@ for epoch in range(NUM_EPOCHS):
     # compute a random shuffle
     shuffle_indices = torch.randperm(len(train_dataset))
     for i in range(len(train_dataset) // BATCH_SIZE):
+        print(f"Epoch {epoch}, Batch {i}/{len(train_dataset) // BATCH_SIZE}")
         # Compute a batch of training examples
         batch_indices = shuffle_indices[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
         inputs_ids = train_input_ids[batch_indices]
@@ -86,4 +89,4 @@ for epoch in range(NUM_EPOCHS):
         log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero)
         wandb.log(log_generations_dict)
         histogram = utils.count_histogram(log_generations_dict["examples"])
-        print(histogram)
+        print("histogram: ", histogram)
