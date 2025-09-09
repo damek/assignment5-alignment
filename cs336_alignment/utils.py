@@ -254,10 +254,12 @@ def log_generations(
 
     # Compute token entropy
     avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
+    input_ids = input_ids.to(hf_model.device)
+    response_mask = response_mask.to(hf_model.device)
     for i in range(0, len(input_ids), batch_size):
         print(f"Computing token entropy for batch {i}/{len(input_ids)}")
-        input_ids_batch = input_ids[i:i+batch_size, :].to(hf_model.device)
-        response_mask_batch = response_mask[i:i+batch_size, :].to(hf_model.device)
+        input_ids_batch = input_ids[i:i+batch_size, :]
+        response_mask_batch = response_mask[i:i+batch_size, :]
         logits=hf_model(input_ids_batch).logits
         token_entropy = compute_entropy(logits)
         tok_counts = response_mask_batch.sum(dim=-1)
