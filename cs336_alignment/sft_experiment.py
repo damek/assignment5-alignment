@@ -102,7 +102,8 @@ for epoch in range(NUM_EPOCHS):
         print(f"Epoch {epoch}, Batch {i}/{len(train_dataset) // BATCH_SIZE}")
         print(f"EMA Loss: {ema_loss:.4f}")
         # Compute a batch of training examples
-        batch_indices = shuffle_indices[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
+        last_index = min(i * BATCH_SIZE + BATCH_SIZE, len(train_dataset))
+        batch_indices = shuffle_indices[i * BATCH_SIZE:last_index]
         input_ids = train_input_ids[batch_indices]
         labels = train_labels[batch_indices]
         response_mask = train_response_mask[batch_indices]
@@ -113,7 +114,7 @@ for epoch in range(NUM_EPOCHS):
         
         # every PRINT_REWARD_EVERY steps, sample generations and print the reward from the last PRINT_REWARD_EVERY steps, then reset the rewards
         if (i+1) % PRINT_REWARD_EVERY == 0:
-            print_batch = shuffle_indices[(i-PRINT_REWARD_EVERY) * BATCH_SIZE:(i) * BATCH_SIZE]
+            print_batch = shuffle_indices[(i-PRINT_REWARD_EVERY) * BATCH_SIZE:last_index]
             vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
             idx = print_batch.tolist() if isinstance(print_batch, torch.Tensor) else list(print_batch)
             batch = [train_dataset_r1_zero[i] for i in idx] # batch is a list of dictionaries
