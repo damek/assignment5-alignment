@@ -50,8 +50,9 @@ eval_dataset = utils.load_dataset(EVAL_DATASET_PATH)
 # OK now we're going to process the dataset into the r_1_zero format.
 train_dataset_r1_zero = utils.data_set_to_prompt_response_answer(train_dataset)
 train_dataset_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for data in train_dataset_r1_zero], [data["response"] for data in train_dataset_r1_zero], tokenizer)
-eval_dataset_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for data in eval_dataset_r1_zero], [data["response"] for data in eval_dataset_r1_zero], tokenizer)
+
 eval_dataset_r1_zero = utils.data_set_to_prompt_response_answer(eval_dataset)
+eval_dataset_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for data in eval_dataset_r1_zero], [data["response"] for data in eval_dataset_r1_zero], tokenizer)
 
 train_prompts = utils.create_prompts(train_dataset, PROMPT_PATH)
 eval_prompts = utils.create_prompts(eval_dataset, PROMPT_PATH)
