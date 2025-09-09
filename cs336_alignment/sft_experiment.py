@@ -24,11 +24,11 @@ def get_args():
     parser.add_argument("--eval_dataset_path", type=str, default="../data/gsm8k/test.jsonl")
     parser.add_argument("--prompt_path", type=str, default="prompts/r1_zero.prompt")
     parser.add_argument("--output_path", type=str, default="outputs/sft_experiment.jsonl")
-    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=2)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--num_epochs", type=int, default=1)
-    parser.add_argument("--print_reward_every", type=int, default=10)
+    parser.add_argument("--print_reward_every", type=int, default=20)
     return parser.parse_args()
 ## later put these into argparse.
 
