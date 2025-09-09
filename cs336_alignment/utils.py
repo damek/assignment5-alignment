@@ -289,7 +289,6 @@ def log_generations(
             "avg_token_entropy": float(ent) if log_token_entropy else None,
             "response_length": int(ln),
         })
-    if log_token_entropy:
     return {
         "examples": out,
         "averages": {
