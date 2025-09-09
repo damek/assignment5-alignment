@@ -28,7 +28,8 @@ def data_set_to_prompt_response_answer(records):
             lines = a.splitlines()
             final_ans = lines[-1].strip()
             reasoning = "\n".join(lines[:-1]).strip()
-        prompt = R1_ZERO_PROMPT.format(question=q)
+        get_base_prompt = open(PROMPT_PATH, "r").read()
+        prompt = get_base_prompt.format(question=q)
         response = f"{reasoning}</think> <answer>{final_ans}</answer>"
         out.append({"prompt": prompt, "response": response, "answer": final_ans})
     return out
