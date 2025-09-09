@@ -54,9 +54,6 @@ train_dataset_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for d
 eval_dataset_r1_zero = utils.data_set_to_prompt_response_answer(eval_dataset)
 eval_dataset_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for data in eval_dataset_r1_zero], [data["response"] for data in eval_dataset_r1_zero], tokenizer)
 
-train_prompts = utils.create_prompts(train_dataset, PROMPT_PATH)
-eval_prompts = utils.create_prompts(eval_dataset, PROMPT_PATH)
-
 optimizer = torch.optim.AdamW(model.parameters(), lr=LR)
 
 train_input_ids = train_dataset_tokenized["input_ids"].to(device_hf)
