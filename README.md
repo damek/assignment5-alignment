@@ -13,6 +13,8 @@
     - Code [utils.py](./cs336_alignment/utils.py)
 - SFT microbatch train step: compute the policy gradient loss and backprop its gradients for a microbatch.
     - Code [utils.py](./cs336_alignment/utils.py)
+- Log generations: log the generations from the VLLM model
+    - Code [utils.py](./cs336_alignment/utils.py)
 
 ## How to run
 
