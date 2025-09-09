@@ -5,6 +5,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import wandb
 import argparse
 
+# cuda visible devices
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 # HARDCODED STUFF
 TRAIN_DATASET_PATH = "../data/gsm8k/test.jsonl"
