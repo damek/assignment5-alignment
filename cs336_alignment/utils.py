@@ -122,13 +122,13 @@ def evaluate_vllm(
     Evaluate a language model on a list of prompts,
     compute evaluation metrics, and serialize results to disk.
     """
-    prompts = [prompt["prompt"] for prompt in prompts]
-    answers = [prompt["answer"] for prompt in prompts]
-    responses = vllm_model.generate(prompts, eval_sampling_params)
+    prompts_list = [prompt["prompt"] for prompt in prompts]
+    answers_list = [prompt["answer"] for prompt in prompts]
+    responses = vllm_model.generate(prompts_list, eval_sampling_params)
     rewards = []
     for i, response in enumerate(responses):
         pred = response.outputs[0].text
-        reward = reward_fn(pred, answers[i])
+        reward = reward_fn(pred, answers_list[i])
         rewards.append(reward)
     return rewards, responses
 
