@@ -87,16 +87,16 @@ def load_dataset(file_path):
             dataset.append(data)
     return dataset
 
-def create_prompts(dataset, prompt_path, number_of_prompts=None):
-    prompts = []
-    get_base_prompt = open(prompt_path, "r").read()
-    if number_of_prompts is None:
-        number_of_prompts = len(dataset)
-    for data in dataset[:number_of_prompts]:    
-        prompt = get_base_prompt
-        prompt = prompt.format(question=data["question"])
-        prompts.append(prompt)
-    return prompts
+# def create_prompts(dataset, prompt_path, number_of_prompts=None):
+#     prompts = []
+#     get_base_prompt = open(prompt_path, "r").read()
+#     if number_of_prompts is None:
+#         number_of_prompts = len(dataset)
+#     for data in dataset[:number_of_prompts]:    
+#         prompt = get_base_prompt
+#         prompt = prompt.format(question=data["question"])
+#         prompts.append(prompt)
+#     return prompts
 
 def create_model(model_name_or_path):
     model = LLM(model=model_name_or_path)
@@ -122,12 +122,12 @@ def evaluate_vllm(
     Evaluate a language model on a list of prompts,
     compute evaluation metrics, and serialize results to disk.
     """
-    prompts = create_prompts(dataset, PROMPT_PATH, len(dataset))
+    prompts = [data["prompt"] for data in dataset]
     responses = vllm_model.generate(prompts, eval_sampling_params)
     rewards = []
     for i, response in enumerate(responses):
         pred = response.outputs[0].text
-        actual = extract_gt(dataset[i]["answer"])
+        actual = dataset[i]["answer"]
         reward = reward_fn(pred, actual)
         rewards.append(reward)
     return rewards, responses

@@ -4,7 +4,7 @@ from vllm import LLM, SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
 import re
 import os
-from utils import load_dataset, create_prompts, create_model, evaluate_vllm, serialize_to_disk, load_serialized_file, count_histogram, print_format_reward_0, print_format_reward_1_answer_reward_0
+from utils import load_dataset, create_prompts, create_model, evaluate_vllm, serialize_to_disk, load_serialized_file, count_histogram, print_format_reward_0, print_format_reward_1_answer_reward_0, data_set_to_prompt_response_answer
 
 DATASET_PATH = "../data/gsm8k/test.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
@@ -14,7 +14,7 @@ OUTPUT_PATH = "outputs/math_baseline.jsonl"
 print("Loading dataset...")
 dataset=load_dataset(DATASET_PATH)    
 print("Creating prompts...")
-prompts=create_prompts(dataset, PROMPT_PATH)
+prompts=data_set_to_prompt_response_answer(dataset)
 print("Creating model...")
 model=create_model(MODEL_NAME_OR_PATH)
 print("Evaluating...")
