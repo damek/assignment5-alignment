@@ -1,6 +1,7 @@
 import utils
 import vllm_utils
 import torch
+from vllm import SamplingParams
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import wandb
 import argparse
@@ -81,6 +82,7 @@ train_input_ids = train_dataset_tokenized["input_ids"].to(device_hf)
 train_labels = train_dataset_tokenized["labels"].to(device_hf)
 train_response_mask = train_dataset_tokenized["response_mask"].to(device_hf)
 
+eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
 # check the eval:    
 
 for epoch in range(NUM_EPOCHS):
@@ -102,7 +104,7 @@ for epoch in range(NUM_EPOCHS):
         # Compute the policy log probs
         policy_log_probs = utils.get_response_log_probs(model, input_ids, labels, return_token_entropy=False)["log_probs"]
         vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
-        rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, train_dataset_r1_zero[batch_indices], eval_sampling_params)
+        rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, train_dataset_r1_zero[batch_indices.tolist()], eval_sampling_params)
         if i == 0:
             ema_reward = rewards["reward"]
             ema_format_reward = rewards["format_reward"]
