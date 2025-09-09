@@ -225,7 +225,6 @@ def sft_microbatch_train_step(
 
 
 # dataset has format {"prompt": str, "response": str, "answer": str}
-# This is better than the old dataset format for math_baseline.py, but i'm going to avoid refactoring for now.
 def log_generations(
     vllm_model,
     hf_model,
