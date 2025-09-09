@@ -21,7 +21,7 @@ WARMUP_STEPS = 100
 NUM_EPOCHS = 1
 WANDB_PROJECT = "sft-experiment"
 
-wandb.init(project=WANDB_PROJECT, entity=WANDB_ENTITY)
+
 # Setup wandb metrics
 wandb.define_metric("train_step") # the x‑axis for training
 wandb.define_metric("eval_step") # the x‑axis for evaluation
