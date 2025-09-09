@@ -28,7 +28,8 @@ def get_args():
     parser.add_argument("--gradient_accumulation_steps", type=int, default=2)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--num_epochs", type=int, default=1)
-    parser.add_argument("--print_reward_every", type=int, default=20)
+    parser.add_argument("--print_reward_every", type=int, default=10)
+    parser.add_argument("--nb_sft_examples", type=int, default=None)
     return parser.parse_args()
 ## later put these into argparse.
 
@@ -42,6 +43,7 @@ LR = args.lr
 NUM_EPOCHS = args.num_epochs
 WANDB_PROJECT = "sft-experiment"
 PRINT_REWARD_EVERY = args.print_reward_every
+NB_SFT_EXAMPLES = args.nb_sft_examples
 
 wandb.init(project="sft-experiment") 
 # Setup wandb metrics
@@ -70,6 +72,8 @@ print("Loading model...")
 print("Loading dataset...")
 # load dataset
 train_dataset = utils.load_dataset(TRAIN_DATASET_PATH)
+if NB_SFT_EXAMPLES is not None:
+    train_dataset = train_dataset[:NB_SFT_EXAMPLES]
 eval_dataset = utils.load_dataset(EVAL_DATASET_PATH)
 # OK now we're going to process the dataset into the r_1_zero format.
 train_dataset_r1_zero = utils.data_set_to_prompt_response_answer(train_dataset)
