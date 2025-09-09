@@ -5,6 +5,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import wandb
 import argparse
 import os
+from drgrpo_grader import r1_zero_reward_fn
 
 # cuda visible devices
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
