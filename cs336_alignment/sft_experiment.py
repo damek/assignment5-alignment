@@ -43,7 +43,6 @@ print("Model Device: ", model.device)
 # load vllm model
 print("Loading vllm model...")
 vllm_model = vllm_utils.init_vllm(model_id, device_vllm, SEED)
-print("VLLM Model Device: ", vllm_model.device)
 
 print("Loading model...")
 print("Loading dataset...")
