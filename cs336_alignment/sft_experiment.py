@@ -101,6 +101,7 @@ for epoch in range(NUM_EPOCHS):
 
         # Compute the policy log probs
         policy_log_probs = utils.get_response_log_probs(model, input_ids, labels, return_token_entropy=False)["log_probs"]
+        vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
         rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, train_dataset_r1_zero[batch_indices], eval_sampling_params)
         if i == 0:
             ema_reward = rewards["reward"]
