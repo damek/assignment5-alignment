@@ -108,7 +108,6 @@ def generate_outputs(prompts, model):
     sampling_params.include_stop_str_in_output = True
     return model.generate(prompts, sampling_params)
 
-
 def extract_gt(ans: str) -> str:
     m = re.search(r"####\s*([^\n]+)", ans)
     return (m.group(1) if m else ans).strip()
@@ -225,8 +224,6 @@ def sft_microbatch_train_step(
     return loss, {"loss": loss}
 
 
-# for now we assume we're given the VLLM model and the HF model
-# later w will write a wrapper function that turns an hf model into a vllm model.
 # dataset has format {"prompt": str, "response": str, "answer": str}
 # This is better than the old dataset format for math_baseline.py, but i'm going to avoid refactoring for now.
 def log_generations(
@@ -238,8 +235,8 @@ def log_generations(
     temperature=1.0,
     top_p=1.0,
 ):
-    # Create proomps from dataset
-    prompts = create_prompts(dataset, PROMPT_PATH, len(dataset))
+    # Create prompts from dataset
+    prompts = [data["prompt"] for data in dataset]
     gt_answers = [data["answer"] for data in dataset]
 
     # Sample generations from VLLM Model
