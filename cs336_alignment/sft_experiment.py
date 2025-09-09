@@ -4,6 +4,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import wandb
 import argparse
+import os
 
 # cuda visible devices
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
