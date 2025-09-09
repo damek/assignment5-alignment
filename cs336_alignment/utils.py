@@ -2,6 +2,10 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
+import json
+import re
+from vllm import LLM, SamplingParams
+from drgrpo_grader import r1_zero_reward_fn
 
 PROMPT_PATH = "prompts/r1_zero.prompt"
 
