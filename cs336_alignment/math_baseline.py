@@ -21,7 +21,7 @@ print("Evaluating...")
 eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
 eval_sampling_params.stop = ["</answer>"]
 eval_sampling_params.include_stop_str_in_output = True
-rewards, responses=evaluate_vllm(model, r1_zero_reward_fn, dataset, eval_sampling_params)
+rewards, responses=evaluate_vllm(model, r1_zero_reward_fn, prompts, eval_sampling_params)
 if not os.path.exists("outputs"):
     os.makedirs("outputs")
 
