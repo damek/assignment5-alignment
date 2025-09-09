@@ -230,10 +230,13 @@ def log_generations(
     hf_model,
     tokenizer,
     dataset,
+    batch_size=None,
     max_tokens=1024,
     temperature=1.0,
     top_p=1.0,
 ):
+    if batch_size is None:
+        batch_size = len(dataset)
     # Create prompts from dataset
     prompts = [data["prompt"] for data in dataset]
     gt_answers = [data["answer"] for data in dataset]
@@ -250,14 +253,12 @@ def log_generations(
     input_ids, labels, response_mask = tokenized_dict["input_ids"], tokenized_dict["labels"], tokenized_dict["response_mask"]
 
     # Compute token entropy
-    with torch.no_grad():
-        input_ids = input_ids.to(hf_model.device)
-        labels = labels.to(hf_model.device)
-        response_mask = response_mask.to(hf_model.device)
-        logits = hf_model(input_ids).logits
+    avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
+    for i in range(0, len(input_ids), batch_size):
+        logits=hf_model(input_ids[i:i+batch_size, :]).logits
         token_entropy = compute_entropy(logits)
-        tok_counts = response_mask.sum(dim=-1)
-        avg_entropy = ((token_entropy*response_mask) / tok_counts).tolist()
+        tok_counts = response_mask[i:i+batch_size, :].sum(dim=-1)
+        avg_entropy[i:i+batch_size] = ((token_entropy*response_mask[i:i+batch_size, :]) / tok_counts).sum(dim=-1)
 
     # Compute response length
     response_length = ((response_mask.sum(dim=-1) / tok_counts).tolist())
