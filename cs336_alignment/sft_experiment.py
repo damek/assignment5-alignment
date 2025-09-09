@@ -71,7 +71,7 @@ for epoch in range(NUM_EPOCHS):
         print(f"Epoch {epoch}, Batch {i}/{len(train_dataset) // BATCH_SIZE}")
         # Compute a batch of training examples
         batch_indices = shuffle_indices[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
-        inputs_ids = train_input_ids[batch_indices]
+        input_ids = train_input_ids[batch_indices]
         labels = train_labels[batch_indices]
         response_mask = train_response_mask[batch_indices]
 
