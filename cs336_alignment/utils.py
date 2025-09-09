@@ -234,6 +234,7 @@ def log_generations(
     max_tokens=1024,
     temperature=1.0,
     top_p=1.0,
+    log_token_entropy=False,
 ):
     if batch_size is None:
         batch_size = len(dataset)
@@ -253,17 +254,18 @@ def log_generations(
     input_ids, labels, response_mask = tokenized_dict["input_ids"], tokenized_dict["labels"], tokenized_dict["response_mask"]
 
     # Compute token entropy
-    avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
-    input_ids = input_ids.to(hf_model.device)
-    response_mask = response_mask.to(hf_model.device)
-    for i in range(0, len(input_ids), batch_size):
-        print(f"Computing token entropy for batch {i}/{len(input_ids)}")
-        input_ids_batch = input_ids[i:i+batch_size, :]
-        response_mask_batch = response_mask[i:i+batch_size, :]
-        logits=hf_model(input_ids_batch).logits
-        token_entropy = compute_entropy(logits)
-        tok_counts = response_mask_batch.sum(dim=-1)
-        avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/tok_counts
+    if log_token_entropy:
+        avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
+        input_ids = input_ids.to(hf_model.device)
+        response_mask = response_mask.to(hf_model.device)
+        for i in range(0, len(input_ids), batch_size):
+            print(f"Computing token entropy for batch {i}/{len(input_ids)}")
+            input_ids_batch = input_ids[i:i+batch_size, :]
+            response_mask_batch = response_mask[i:i+batch_size, :]
+            logits=hf_model(input_ids_batch).logits
+            token_entropy = compute_entropy(logits)
+            tok_counts = response_mask_batch.sum(dim=-1)
+            avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/tok_counts
 
     # Compute response length
     response_length = ((response_mask.sum(dim=-1) / tok_counts).tolist())
@@ -278,16 +280,16 @@ def log_generations(
 
     # Create output dictionary
     out = []
-    for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy, resp_lens):
+    for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy if log_token_entropy else None, resp_lens):
         out.append({
             "prompt": p,
             "response": rtxt,
             "ground_truth": gt,
             "metrics": rew,  
-            "avg_token_entropy": float(ent),
+            "avg_token_entropy": float(ent) if log_token_entropy else None,
             "response_length": int(ln),
         })
-
+    if log_token_entropy:
     return {
         "examples": out,
         "averages": {
