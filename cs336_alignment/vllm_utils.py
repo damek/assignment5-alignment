@@ -14,10 +14,7 @@ def init_vllm(model_id, device, seed, gpu_memory_utilization=0.85):
     # (1) place the vLLM model on the desired device (world_size_patch) and
     # (2) avoid a test that is not designed for our setting (profiling_patch).
     world_size_patch = patch("torch.distributed.get_world_size", return_value=1)
-    profiling_patch = patch(
-        "vllm.worker.worker.Worker._assert_memory_footprint_increased_during_profiling",
-        return_value=None
-        )
+    profiling_patch = patch("vllm.worker.worker.Worker._assert_memory_footprint_increased_during_profiling",return_value=None)
     with world_size_patch, profiling_patch:
         return LLM(
             model=model_id,
