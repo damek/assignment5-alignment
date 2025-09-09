@@ -35,8 +35,8 @@ wandb.define_metric("eval/*", step_metric="eval_step")
 # set up wandb
 
 model_id = "Qwen/Qwen2.5-Math-1.5B"
-device_vllm = "cuda:1"
-device_hf = "cuda:0"
+device_vllm = "cuda:0"
+device_hf = "cuda:1"
 
 # load hf model 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
