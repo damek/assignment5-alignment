@@ -114,7 +114,7 @@ for epoch in range(NUM_EPOCHS):
             idx = print_batch.tolist() if isinstance(print_batch, torch.Tensor) else list(print_batch)
             batch = [train_dataset_r1_zero[i] for i in idx] # batch is a list of dictionaries
             rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, batch, eval_sampling_params)
-            if i == 0:
+            if i == PRINT_REWARD_EVERY-1:
                 ema_reward = torch.tensor([x["reward"] for x in rewards]).sum() 
                 ema_format_reward = torch.tensor([x["format_reward"] for x in rewards]).sum()
             else:
