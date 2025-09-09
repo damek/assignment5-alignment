@@ -9,6 +9,31 @@ from drgrpo_grader import r1_zero_reward_fn
 
 PROMPT_PATH = "prompts/r1_zero.prompt"
 
+# the way the gsm8k dataset is format, the final part of the answer has a ### at the end followed by GT. 
+# Thanks to gpt5 for writing this one.
+def data_set_to_prompt_response_answer(records):
+    """
+    records: iterable of dicts like {"question": str, "answer": str}
+    returns: list of {"prompt": str, "response": str, "answer": str}
+    """
+    out = []
+    for ex in records:
+        q = ex["question"].strip()
+        a = ex["answer"].rstrip()
+        m = re.search(r"(?:^|\n)####\s*(.+)\s*$", a)  # grab the final '#### answer'
+        if m:
+            final_ans = m.group(1).strip()
+            reasoning = a[:m.start()].strip()
+        else:  # fallback if no '####'
+            lines = a.splitlines()
+            final_ans = lines[-1].strip()
+            reasoning = "\n".join(lines[:-1]).strip()
+        prompt = R1_ZERO_PROMPT.format(question=q)
+        response = f"{reasoning}</think> <answer>{final_ans}</answer>"
+        out.append({"prompt": prompt, "response": response, "answer": final_ans})
+    return out
+    
+
 def load_serialized_file(file_path):
     return [json.loads(line) for line in open(file_path, "r", encoding="utf-8")]
 
@@ -201,6 +226,8 @@ def sft_microbatch_train_step(
 
 # for now we assume we're given the VLLM model and the HF model
 # later w will write a wrapper function that turns an hf model into a vllm model.
+# dataset has format {"prompt": str, "response": str, "answer": str}
+# This is better than the old dataset format for math_baseline.py, but i'm going to avoid refactoring for now.
 def log_generations(
     vllm_model,
     hf_model,
@@ -212,7 +239,7 @@ def log_generations(
 ):
     # Create proomps from dataset
     prompts = create_prompts(dataset, PROMPT_PATH, len(dataset))
-    gt_answers = [extract_gt(data["answer"]) for data in dataset]
+    gt_answers = [data["answer"] for data in dataset]
 
     # Sample generations from VLLM Model
     eval_sampling_params = SamplingParams(temperature=temperature, top_p=top_p, max_tokens=max_tokens)
@@ -250,7 +277,7 @@ def log_generations(
             "prompt": p,
             "response": rtxt,
             "ground_truth": gt,
-            "reward": rew,  
+            "metrics": rew,  
             "avg_token_entropy": float(ent),
             "response_length": int(ln),
         })
