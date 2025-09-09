@@ -115,11 +115,11 @@ for epoch in range(NUM_EPOCHS):
             batch = [train_dataset_r1_zero[i] for i in idx] # batch is a list of dictionaries
             rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, batch, eval_sampling_params)
             if i == PRINT_REWARD_EVERY-1:
-                ema_reward = torch.tensor([x["reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY*BATCH_SIZE
-                ema_format_reward = torch.tensor([x["format_reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY*BATCH_SIZE
+                ema_reward = torch.tensor([x["reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE
+                ema_format_reward = torch.tensor([x["format_reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE
             else:
-                ema_reward = 0.9 * ema_reward + 0.1 * torch.tensor([x["reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY*BATCH_SIZE
-                ema_format_reward = 0.9 * ema_format_reward + 0.1 * torch.tensor([x["format_reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY*BATCH_SIZE   
+                ema_reward = 0.9 * ema_reward + 0.1 * torch.tensor([x["reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE
+                ema_format_reward = 0.9 * ema_format_reward + 0.1 * torch.tensor([x["format_reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE   
             print(f"EMA Reward: {ema_reward:.4f}, EMA Format Reward: {ema_format_reward:.4f}")
 
         # Compute the loss
