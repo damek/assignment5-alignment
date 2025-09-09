@@ -115,14 +115,14 @@ def extract_gt(ans: str) -> str:
 def evaluate_vllm(
     vllm_model,
     reward_fn,
-    dataset,
+    prompts,
     eval_sampling_params,
     ) -> None:
     """
     Evaluate a language model on a list of prompts,
     compute evaluation metrics, and serialize results to disk.
     """
-    prompts = [data["question"] for data in dataset]
+    prompts = [data["prompt"] for data in dataset]
     responses = vllm_model.generate(prompts, eval_sampling_params)
     rewards = []
     for i, response in enumerate(responses):
