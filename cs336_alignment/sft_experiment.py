@@ -21,7 +21,7 @@ WARMUP_STEPS = 100
 NUM_EPOCHS = 1
 WANDB_PROJECT = "sft-experiment"
 
-
+wandb.init(project="sft-experiment") 
 # Setup wandb metrics
 wandb.define_metric("train_step") # the x‑axis for training
 wandb.define_metric("eval_step") # the x‑axis for evaluation
@@ -30,7 +30,6 @@ wandb.define_metric("train/*", step_metric="train_step")
 # everything that starts with eval/ is tied to eval_step
 wandb.define_metric("eval/*", step_metric="eval_step")
 # set up wandb
-wandb.init(project="sft-experiment") 
 
 model_id = "Qwen/Qwen2.5-Math-1.5B"
 device_vllm = "cuda:1"
