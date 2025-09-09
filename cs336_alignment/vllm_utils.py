@@ -1,5 +1,7 @@
 from vllm.model_executor import set_random_seed as vllm_set_random_seed
-
+from unittest.mock import patch
+from vllm import LLM
+import torch
 
 def init_vllm(model_id, device, seed, gpu_memory_utilization=0.85):
     """
