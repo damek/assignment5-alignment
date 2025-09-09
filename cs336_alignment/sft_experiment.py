@@ -139,7 +139,7 @@ for epoch in range(NUM_EPOCHS):
 
     with torch.no_grad():
         vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
-        log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero)
+        log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=BATCH_SIZE)
         wandb.log(log_generations_dict)
         histogram = utils.count_histogram(log_generations_dict["examples"])
         print("histogram: ", histogram)
