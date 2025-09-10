@@ -45,14 +45,16 @@ BATCH_SIZE = args.batch_size
 GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
 LR = args.lr
 NUM_EPOCHS = args.num_epochs
-WANDB_PROJECT = "sft-experiment"
+WANDB_PROJECT = "expert-iteration-experiment"
 PRINT_REWARD_EVERY = args.print_reward_every
 NUM_SFT_EXAMPLES = args.num_sft_examples
 NUM_EXPERT_ITERATIONS = args.num_expert_iterations
 NUM_ROLLOUTS = args.num_rollouts
 EXPERT_BATCH_SIZE = args.expert_batch_size
 
-wandb.init(project="sft-experiment") 
+# wandb.init(project="sft-experiment") 
+# set wandb experiment name to include expert_batch_size, epochs, num_rollouts, num_expert_iterations
+wandb.init(project=WANDB_PROJECT, name=f"expert_batch_size_{EXPERT_BATCH_SIZE}_epochs_{NUM_EPOCHS}_num_rollouts_{NUM_ROLLOUTS}_num_expert_iterations_{NUM_EXPERT_ITERATIONS}")
 # Setup wandb metrics
 wandb.define_metric("train_step") # the x‑axis for training
 wandb.define_metric("eval_step") # the x‑axis for evaluation
