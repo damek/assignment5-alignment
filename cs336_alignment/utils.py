@@ -280,14 +280,14 @@ def log_generations(
 
     # Create output dictionary
     out = []
-    for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy if log_token_entropy else None, resp_lens):
+    for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy if log_token_entropy else None, response_length):
         out.append({
             "prompt": p,
             "response": rtxt,
             "ground_truth": gt,
             "metrics": rew,  
             "avg_token_entropy": float(ent) if log_token_entropy else None,
-            "response_length": int(ln),
+            "response_length": float(ln),
         })
     return {
         "examples": out,
