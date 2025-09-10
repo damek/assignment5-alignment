@@ -254,6 +254,7 @@ def log_generations(
     input_ids, labels, response_mask = tokenized_dict["input_ids"], tokenized_dict["labels"], tokenized_dict["response_mask"]
 
     # Compute token entropy
+    response_length = response_mask.sum(dim=-1)
     if log_token_entropy:
         avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
         input_ids = input_ids.to(hf_model.device)
@@ -264,11 +265,10 @@ def log_generations(
             response_mask_batch = response_mask[i:i+batch_size, :]
             logits=hf_model(input_ids_batch).logits
             token_entropy = compute_entropy(logits)
-            tok_counts = response_mask_batch.sum(dim=-1)
-            avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/tok_counts
+            avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/response_length[i:i+batch_size]
 
     # Compute response length
-    response_length = ((response_mask.sum(dim=-1) / tok_counts).tolist())
+    # response_length = (response_length / response_length).tolist()
     # Compute which samples are correct
     is_correct = [int(r["reward"] == 1) for r in rewards]
     L = torch.tensor(response_length)
