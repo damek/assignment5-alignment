@@ -12,11 +12,6 @@ import numpy as np
 # cuda visible devices
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
-# HARDCODED STUFF
-TRAIN_DATASET_PATH = "../data/gsm8k/train.jsonl"
-EVAL_DATASET_PATH = "../data/gsm8k/test.jsonl"
-PROMPT_PATH = "prompts/r1_zero.prompt"
-OUTPUT_PATH = "outputs/sft_experiment.jsonl"
 
 
 def get_args():
@@ -34,6 +29,11 @@ def get_args():
     return parser.parse_args()
 
 args = get_args()
+# HARDCODED STUFF
+TRAIN_DATASET_PATH = args.train_dataset_path
+EVAL_DATASET_PATH = args.eval_dataset_path
+PROMPT_PATH = args.prompt_path
+OUTPUT_PATH = args.output_path
 
 SEED = 42
 torch.manual_seed(SEED)
