@@ -1,5 +1,8 @@
 import torch
 import utils
+import json
+from vllm import SamplingParams
+from drgrpo_grader import r1_zero_reward_fn
 
 DATASET_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
