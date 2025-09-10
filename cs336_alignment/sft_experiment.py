@@ -107,9 +107,9 @@ for epoch in range(NUM_EPOCHS):
         # Compute a batch of training examples
         last_index = min(i * BATCH_SIZE + BATCH_SIZE, len(train_dataset))
         batch_indices = shuffle_indices[i * BATCH_SIZE:last_index]
-        input_ids = train_input_ids[batch_indices]
-        labels = train_labels[batch_indices]
-        response_mask = train_response_mask[batch_indices]
+        input_ids = train_input_ids[batch_indices, :]
+        labels = train_labels[batch_indices, :]
+        response_mask = train_response_mask[batch_indices, :]
 
         # Compute the policy log probs
         policy_log_probs = utils.get_response_log_probs(model, input_ids, labels, return_token_entropy=False)["log_probs"]

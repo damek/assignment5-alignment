@@ -127,9 +127,9 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             print(f"EMA Loss: {ema_loss:.4f}")
             last_index = min(i * BATCH_SIZE + BATCH_SIZE, len(expert_batch))
             batch_indices = shuffle_expert_indices[i * BATCH_SIZE:last_index]
-            input_ids_batch = input_ids[batch_indices]
-            labels_batch = labels[batch_indices]
-            response_mask_batch = response_mask[batch_indices]
+            input_ids_batch = input_ids[batch_indices, :]
+            labels_batch = labels[batch_indices, :]
+            response_mask_batch = response_mask[batch_indices, :]
 
             # Compute the policy log probs
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
