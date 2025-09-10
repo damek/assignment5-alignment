@@ -24,7 +24,6 @@ def get_args():
     parser.add_argument("--gradient_accumulation_steps", type=int, default=2)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--num_epochs", type=int, default=1)
-    parser.add_argument("--print_reward_every", type=int, default=10)
     parser.add_argument("--num_sft_examples", type=int, default=None)
     return parser.parse_args()
 
@@ -43,7 +42,6 @@ GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
 LR = args.lr
 NUM_EPOCHS = args.num_epochs
 WANDB_PROJECT = "sft-experiment"
-PRINT_REWARD_EVERY = args.print_reward_every
 NUM_SFT_EXAMPLES = args.num_sft_examples
 
 wandb.init(project="sft-experiment") 
@@ -114,24 +112,6 @@ for epoch in range(NUM_EPOCHS):
         # Compute the policy log probs
         policy_log_probs = utils.get_response_log_probs(model, input_ids, labels, return_token_entropy=False)["log_probs"]
 
-        
-        # every PRINT_REWARD_EVERY steps, sample generations and print the reward from the last PRINT_REWARD_EVERY steps, then reset the rewards
-        # if (i+1) % PRINT_REWARD_EVERY == 0:
-        #     print_batch = shuffle_indices[(i-PRINT_REWARD_EVERY) * BATCH_SIZE:last_index]
-        #     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
-        #     idx = print_batch.tolist() if isinstance(print_batch, torch.Tensor) else list(print_batch)
-        #     batch = [train_dataset_r1_zero[i] for i in idx] # batch is a list of dictionaries
-        #     rewards, _ = utils.evaluate_vllm(vllm_model, r1_zero_reward_fn, batch, eval_sampling_params)
-        #     if i == PRINT_REWARD_EVERY-1:
-        #         ema_reward = torch.tensor([x["reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE
-        #         ema_format_reward = torch.tensor([x["format_reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE
-        #     else:
-        #         ema_reward = 0.9 * ema_reward + 0.1 * torch.tensor([x["reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE
-        #         ema_format_reward = 0.9 * ema_format_reward + 0.1 * torch.tensor([x["format_reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE   
-        #     print(f"EMA Reward: {ema_reward:.4f}, EMA Format Reward: {ema_format_reward:.4f}")
-        #     wandb.log({"ema_reward": ema_reward, "ema_format_reward": ema_format_reward})
-
-        # Compute the loss
         loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS)
         if i == 0:
             ema_loss = loss.item()

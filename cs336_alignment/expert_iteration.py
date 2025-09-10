@@ -24,7 +24,6 @@ def get_args():
     parser.add_argument("--gradient_accumulation_steps", type=int, default=2)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--num_epochs", type=int, default=1)
-    parser.add_argument("--print_reward_every", type=int, default=10)
     parser.add_argument("--num_sft_examples", type=int, default=None)
     parser.add_argument("--num_rollouts", type=int, default=1)
     parser.add_argument("--num_expert_iterations", type=int, default=5)
@@ -46,7 +45,6 @@ GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
 LR = args.lr
 NUM_EPOCHS = args.num_epochs
 WANDB_PROJECT = "expert-iteration-experiment"
-PRINT_REWARD_EVERY = args.print_reward_every
 NUM_SFT_EXAMPLES = args.num_sft_examples
 NUM_EXPERT_ITERATIONS = args.num_expert_iterations
 NUM_ROLLOUTS = args.num_rollouts
@@ -115,8 +113,6 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     labels = expert_batch_tokenized["labels"].to(device_hf)
     response_mask = expert_batch_tokenized["response_mask"].to(device_hf)
     
-    # now we're going to construct to do SFT on this dataset.
-
     for epoch in range(NUM_EPOCHS):
         shuffle_expert_indices = torch.randperm(len(expert_batch))
         ema_loss = float("inf")
