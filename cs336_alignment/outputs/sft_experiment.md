@@ -11,7 +11,7 @@ Deliverable: Validation accuracy curves associated with different dataset sizes.
 uv run sft_experiment.py --num_sft_examples ?? --batch_size 10 
 ```
 
-![Validation accuracy curves associated with different dataset sizes.](figures/sft_trainset_vs_validation.png)
+![](figures/sft_trainset_vs_validation.png)
 
 
 ## Question 2
@@ -25,7 +25,7 @@ First filtered the dataset
 uv run filter_gsm8k_positives.py
 ```
 
-![Validation accuracy curves associated with different dataset sizes.](figures/sft_trainset_vs_validation_filtered.png)
+![](figures/sft_filter_positives.png)
 
 
 Deliverable: Report the size of the dataset and the validation accuracy curve you achieve.
