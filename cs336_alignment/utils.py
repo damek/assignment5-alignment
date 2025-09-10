@@ -327,9 +327,9 @@ def make_expert_iteration_batch(
     data_batch,
     batch_size,
     num_rollouts,
-    max_tokens,
-    temperature,
-    top_p,
+    max_tokens = 1024,
+    temperature =1.0,
+    top_p =1.0,
     ) -> list[dict]:
 
     prompts = [data["prompt"] for data in data_batch]
