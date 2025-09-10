@@ -15,6 +15,9 @@
     - Code [utils.py](./cs336_alignment/utils.py)
 - Log generations: log the generations from the VLLM model
     - Code [utils.py](./cs336_alignment/utils.py)
+- SFT experiment: run SFT on the GSM8k dataset
+    - Code [sft_experiment.py](./cs336_alignment/sft_experiment.py)
+    - Results [sft_experiment.md](./cs336_alignment/outputs/sft_experiment.md)
 
 ## How to run
 
