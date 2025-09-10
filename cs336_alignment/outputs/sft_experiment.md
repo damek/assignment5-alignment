@@ -8,7 +8,7 @@ batch size to achieve at least 15% validation accuracy when using the full datas
 Deliverable: Validation accuracy curves associated with different dataset sizes.
 
 ```bash
-uv run sft_experiment.py --nb_sft_examples ?? --batch_size 10 
+uv run sft_experiment.py --num_sft_examples ?? --batch_size 10 
 ```
 
 ![Validation accuracy curves associated with different dataset sizes.](figures/sft_trainset_vs_validation.png)
