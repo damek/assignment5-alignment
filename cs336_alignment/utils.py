@@ -63,6 +63,18 @@ def print_format_reward_1_answer_reward_0(rows, nb_rows=10):
             count += 1
             if count >= nb_rows:
                 break
+def print_format_reward_1_answer_reward_1(rows, nb_rows=10):
+    count = 0
+    for row in rows:
+        if row["metrics"]["format_reward"] == 1 and row["metrics"]["answer_reward"] == 1:
+            print("Question: ", row["question"])
+            print("Generation: ", row["generation"])
+            print("Metrics: ", row["metrics"])
+            print("GT Answer: ", row["gt_answer"])
+            print("--------------------------------")
+            count += 1
+            if count >= nb_rows:
+                break
 
 def count_histogram(rows):
     histogram = {
@@ -284,9 +296,9 @@ def log_generations(
     out = []
     for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy, response_length):
         out.append({
-            "prompt": p,
-            "response": rtxt,
-            "ground_truth": gt,
+            "question": p,
+            "generation": rtxt,
+            "gt_extracted_answer": gt,
             "metrics": rew,  
             "avg_token_entropy": float(ent),
             "response_length": float(ln),

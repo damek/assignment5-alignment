@@ -131,6 +131,7 @@ for epoch in range(NUM_EPOCHS):
                 ema_reward = 0.9 * ema_reward + 0.1 * torch.tensor([x["reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE
                 ema_format_reward = 0.9 * ema_format_reward + 0.1 * torch.tensor([x["format_reward"] for x in rewards]).sum()/ PRINT_REWARD_EVERY/BATCH_SIZE   
             print(f"EMA Reward: {ema_reward:.4f}, EMA Format Reward: {ema_format_reward:.4f}")
+            wandb.log({"ema_reward": ema_reward, "ema_format_reward": ema_format_reward})
 
         # Compute the loss
         loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS)
@@ -138,6 +139,7 @@ for epoch in range(NUM_EPOCHS):
             ema_loss = loss.item()
         else:
             ema_loss = 0.9 * ema_loss + 0.1 * loss.item()
+        wandb.log({"ema_loss": ema_loss})
         if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
             optimizer.step()
             optimizer.zero_grad()
@@ -148,4 +150,6 @@ for epoch in range(NUM_EPOCHS):
         wandb.log(log_generations_dict)
         histogram = utils.count_histogram(log_generations_dict["examples"])
         print("histogram: ", histogram)
-        print("Percentage of correct examples: ", histogram["correct with both format and answer reward 1"] / sum(histogram.values()))
+        val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
+        print("Percentage of correct examples: ", val_accuracy)
+        wandb.log({"val_accuracy": val_accuracy})
