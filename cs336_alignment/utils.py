@@ -141,7 +141,7 @@ def evaluate_vllm(
     for i, response in enumerate(responses):
         reward_response = []
         for output in enumerate(response.outputs):
-            pred = output.text
+            pred = output[0].text
             reward = reward_fn(pred, answers_list[i])
             reward_response.append(reward)
         rewards.append(reward_response)
