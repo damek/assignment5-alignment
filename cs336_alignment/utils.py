@@ -139,12 +139,16 @@ def evaluate_vllm(
     responses = vllm_model.generate(prompts_list, eval_sampling_params)
     rewards = []
     for i, response in enumerate(responses):
-        pred = response.outputs[0].text
-        reward = reward_fn(pred, answers_list[i])
-        rewards.append(reward)
+        reward_response = []
+        for output in enumerate(response.outputs):
+            pred = output.text
+            reward = reward_fn(pred, answers_list[i])
+            reward_response.append(reward)
+        rewards.append(reward_response)
     return rewards, responses
 
 
+# This is assuming we've done 1 rollout per example.
 def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_path, add_to_existing_file=False):
     if add_to_existing_file:
         write_mode = "a"
@@ -158,7 +162,7 @@ def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_
                 "gt_raw_answer": ex["response"],
                 "gt_answer": ex["answer"],
                 "generation": out.outputs[0].text,
-                "metrics": score,  
+                "metrics": score[0],  
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")    
 
@@ -193,7 +197,7 @@ def compute_entropy(logits: torch.Tensor) -> torch.Tensor:
     p = F.softmax(logits, dim=-1)
     log_p = F.log_softmax(logits, dim=-1) ## hahaha cheating
     return -torch.sum(log_p * p, dim=-1)
-    
+
 
 def get_response_log_probs(
     model,
@@ -288,7 +292,7 @@ def log_generations(
     # Compute response length
     # response_length = (response_length / response_length).tolist()
     # Compute which samples are correct
-    is_correct = [int(r["reward"] == 1) for r in rewards]
+    is_correct = [int(r[0]["reward"] == 1) for r in rewards]
     L = torch.tensor(response_length, dtype=torch.float32)
     C = torch.tensor(is_correct)
     # compute stats
@@ -303,7 +307,7 @@ def log_generations(
             "question": p,
             "generation": rtxt,
             "gt_answer": gt,
-            "metrics": rew,  
+            "metrics": rew[0],  
             "avg_token_entropy": float(ent),
             "response_length": float(ln),
         })
@@ -315,3 +319,21 @@ def log_generations(
             "avg_response_length_incorrect": float(incorrect_response_length),
         },
     }
+
+
+# Most of this file assumes we do 1 rollout. This function breaks from that. Thus, there could be some backwards compatibility issues.
+def make_expert_iteration_batch
+    (vllm_model, 
+    data_batch,
+    num_rollouts,
+    max_tokens,
+    temperature,
+    top_p,
+    batch_size,
+    ) -> list[dict]:
+    prompts = [data["prompt"] for data in data_batch]
+    gt_answers = [data["answer"] for data in data_batch]
+    eval_sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
+    eval_sampling_params.stop = ["</answer>"]
+    eval_sampling_params.include_stop_str_in_output = True
+    rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, data_batch, eval_sampling_params)
