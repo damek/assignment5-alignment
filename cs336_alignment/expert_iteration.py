@@ -104,7 +104,8 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     shuffle_indices = torch.randperm(len(train_dataset))
     # now we're going to choose a subset of them to make our expert iteration batch
     expert_batch_indices = shuffle_indices[:EXPERT_BATCH_SIZE]
-    expert_batch = utils.make_expert_iteration_batch(vllm_model, train_dataset_r1_zero[expert_batch_indices], EXPERT_BATCH_SIZE, NUM_ROLLOUTS)
+    expert_batch_r1_zero = [train_dataset_r1_zero[i] for i in expert_batch_indices]
+    expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS)
     expert_batch_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for data in expert_batch], [data["response"] for data in expert_batch], tokenizer)
     input_ids = expert_batch_tokenized["input_ids"].to(device_hf)
     labels = expert_batch_tokenized["labels"].to(device_hf)
