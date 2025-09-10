@@ -298,7 +298,7 @@ def log_generations(
         out.append({
             "question": p,
             "generation": rtxt,
-            "gt_extracted_answer": gt,
+            "gt_answer": gt,
             "metrics": rew,  
             "avg_token_entropy": float(ent),
             "response_length": float(ln),
