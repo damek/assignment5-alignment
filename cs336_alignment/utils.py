@@ -161,7 +161,7 @@ def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_
                 "id": i,
                 "question": ex["prompt"],
                 "gt_raw_answer": ex["response"],
-                "gt_extracted_answer": ex["answer"],
+                "gt_answer": ex["answer"],
                 "generation": out.outputs[0].text,
                 "metrics": score,  
             }
