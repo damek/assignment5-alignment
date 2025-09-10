@@ -25,6 +25,8 @@ First filtered the dataset
 uv run filter_gsm8k_positives.py
 ```
 
+Note the original accuracy is around 2%.
+
 ![](figures/sft_filter_positives.png)
 
 
