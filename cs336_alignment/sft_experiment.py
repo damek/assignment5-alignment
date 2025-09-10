@@ -145,10 +145,12 @@ for epoch in range(NUM_EPOCHS):
     with torch.no_grad():
         vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
         log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=BATCH_SIZE)
-        wandb.log(log_generations_dict)
+        wandb.log(log_generations_dict) # index x by epoch
         histogram = utils.count_histogram(log_generations_dict["examples"])
         print("histogram: ", histogram)
         val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
         print("Percentage of correct examples: ", val_accuracy)
-        wandb.log({"val_accuracy": val_accuracy})
+        wandb.log({"val_accuracy": val_accuracy, "epoch": epoch}) # make the x axis of plot epoch
+
+
         utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
