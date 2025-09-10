@@ -339,10 +339,11 @@ def make_expert_iteration_batch(
     eval_sampling_params.min_tokens = 4
     eval_sampling_params.include_stop_str_in_output = True
     rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, data_batch, eval_sampling_params)
-
+    
     # now we'll filter through the responses and only keep the correct ones, 
     # saving each one as a new training sample in a dataset 
     out = []
+    total_reward = 0
     for i, (prompt, gt, response, reward) in enumerate(zip(prompts, gt_answers, responses, rewards)):
         for rew, output in zip(reward, response.outputs):
             if rew["reward"] == 1:
@@ -351,4 +352,7 @@ def make_expert_iteration_batch(
                     "response": output.text,
                     "answer": gt,
                 })
+                total_reward += 1
+    print("Length of expert batch: ", len(out))
+    print("Total reward: ", total_reward)
     return out
