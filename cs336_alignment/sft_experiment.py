@@ -44,7 +44,7 @@ LR = args.lr
 NUM_EPOCHS = args.num_epochs
 WANDB_PROJECT = "sft-experiment"
 PRINT_REWARD_EVERY = args.print_reward_every
-NB_SFT_EXAMPLES = args.nb_sft_examples
+NUM_SFT_EXAMPLES = args.num_sft_examples
 
 wandb.init(project="sft-experiment") 
 # Setup wandb metrics
@@ -75,8 +75,8 @@ print("Loading dataset...")
 train_dataset = utils.load_dataset(TRAIN_DATASET_PATH)
 shuffle_indices = torch.randperm(len(train_dataset)) # just shuffle it the first time too.
 train_dataset = [train_dataset[i] for i in shuffle_indices]
-if NB_SFT_EXAMPLES is not None:
-    train_dataset = train_dataset[:NB_SFT_EXAMPLES]
+if NUM_SFT_EXAMPLES is not None:
+    train_dataset = train_dataset[:NUM_SFT_EXAMPLES]
 eval_dataset = utils.load_dataset(EVAL_DATASET_PATH)
 # OK now we're going to process the dataset into the r_1_zero format.
 train_dataset_r1_zero = utils.data_set_to_prompt_response_answer(train_dataset)
