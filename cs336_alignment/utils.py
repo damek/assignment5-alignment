@@ -147,7 +147,11 @@ def evaluate_vllm(
 
 
 def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_path, add_to_existing_file=False):
-    with open(output_path, "a", encoding="utf-8") as f:
+    if add_to_existing_file:
+        write_mode = "a"
+    else:
+        write_mode = "w"
+    with open(output_path, write_mode, encoding="utf-8") as f:
         for i, (ex, out, score) in enumerate(zip(dataset, responses, rewards)):
             if i == 0:
                 print("Sample 0: ", ex)
