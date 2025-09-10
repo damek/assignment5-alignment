@@ -152,10 +152,6 @@ def serialize_to_disk(dataset, responses, rewards, eval_sampling_params, output_
         write_mode = "w"
     with open(output_path, write_mode, encoding="utf-8") as f:
         for i, (ex, out, score) in enumerate(zip(dataset, responses, rewards)):
-            if i == 0:
-                print("Sample 0: ", ex)
-                print("Response 0: ", out.outputs[0].text)
-                print("Score 0: ", score)
             rec = {
                 "id": i,
                 "question": ex["prompt"],
