@@ -7,6 +7,7 @@ import wandb
 import argparse
 import os
 from drgrpo_grader import r1_zero_reward_fn
+import numpy as np
 
 # cuda visible devices
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
@@ -36,6 +37,8 @@ def get_args():
 args = get_args()
 
 SEED = 42
+torch.manual_seed(SEED)
+np.random.seed(SEED)
 BATCH_SIZE = args.batch_size
 GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
 LR = args.lr
@@ -72,6 +75,8 @@ print("Loading model...")
 print("Loading dataset...")
 # load dataset
 train_dataset = utils.load_dataset(TRAIN_DATASET_PATH)
+shuffle_indices = torch.randperm(len(train_dataset)) # just shuffle it the first time too.
+train_dataset = [train_dataset[i] for i in shuffle_indices]
 if NB_SFT_EXAMPLES is not None:
     train_dataset = train_dataset[:NB_SFT_EXAMPLES]
 eval_dataset = utils.load_dataset(EVAL_DATASET_PATH)
@@ -143,3 +148,4 @@ for epoch in range(NUM_EPOCHS):
         wandb.log(log_generations_dict)
         histogram = utils.count_histogram(log_generations_dict["examples"])
         print("histogram: ", histogram)
+        print("Percentage of correct examples: ", histogram["correct with both format and answer reward 1"] / sum(histogram.values()))
