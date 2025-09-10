@@ -4,7 +4,7 @@ import json
 from vllm import SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
 
-DATASET_PATH = "../data/gsm8k/test.jsonl"
+DATASET_PATH = "../data/gsm8k/train.jsonl"
 PROMPT_PATH = "prompts/r1_zero.prompt"
 MODEL_NAME_OR_PATH = "Qwen/Qwen2.5-Math-1.5B"
 
@@ -16,9 +16,10 @@ eval_sampling_params.stop = ["</answer>"]
 eval_sampling_params.include_stop_str_in_output = True
 rewards, responses = utils.evaluate_vllm(model, r1_zero_reward_fn, dataset_r1_zero, eval_sampling_params)
 
+
 outputs_positives = [i for i, reward in enumerate(rewards) if reward["reward"] == 1]
 print(len(outputs_positives))
 
-with open("../data/gsm8k/test_positives.jsonl", "w") as f:
+with open("../data/gsm8k/train_positives.jsonl", "w") as f:
     for i in outputs_positives:
         f.write(json.dumps(dataset[i], ensure_ascii=False) + "\n")
