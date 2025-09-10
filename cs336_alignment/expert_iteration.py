@@ -123,15 +123,15 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             print(f"EMA Loss: {ema_loss:.4f}")
             last_index = min(i * BATCH_SIZE + BATCH_SIZE, len(expert_batch))
             batch_indices = shuffle_expert_indices[i * BATCH_SIZE:last_index]
-            input_ids = input_ids[batch_indices]
-            labels = labels[batch_indices]
-            response_mask = response_mask[batch_indices]
+            input_ids_batch = input_ids[batch_indices].to(device_hf)
+            labels_batch = labels[batch_indices].to(device_hf)
+            response_mask_batch = response_mask[batch_indices].to(device_hf)
 
             # Compute the policy log probs
-            policy_log_probs = utils.get_response_log_probs(model, input_ids, labels, return_token_entropy=False)["log_probs"]
+            policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
 
             # Compute the loss
-            loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS)
+            loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS)
             if i == 0:
                 ema_loss = loss.item()
             else:
