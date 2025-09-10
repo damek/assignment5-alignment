@@ -153,3 +153,4 @@ for epoch in range(NUM_EPOCHS):
         val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
         print("Percentage of correct examples: ", val_accuracy)
         wandb.log({"val_accuracy": val_accuracy})
+        utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
