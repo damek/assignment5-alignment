@@ -271,7 +271,7 @@ def log_generations(
     # response_length = (response_length / response_length).tolist()
     # Compute which samples are correct
     is_correct = [int(r["reward"] == 1) for r in rewards]
-    L = torch.tensor(response_length)
+    L = torch.tensor(response_length, dtype=torch.float32)
     C = torch.tensor(is_correct)
     # compute stats
     avg_len = L.mean().item()
