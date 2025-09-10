@@ -93,13 +93,12 @@ eval_dataset_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for da
 
 optimizer = torch.optim.AdamW(model.parameters(), lr=LR)
 
-train_input_ids = train_dataset_tokenized["input_ids"].to(device_hf)
-train_labels = train_dataset_tokenized["labels"].to(device_hf)
-train_response_mask = train_dataset_tokenized["response_mask"].to(device_hf)
+# train_input_ids = train_dataset_tokenized["input_ids"].to(device_hf)
+# train_labels = train_dataset_tokenized["labels"].to(device_hf)
+# train_response_mask = train_dataset_tokenized["response_mask"].to(device_hf)
 
 eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
 # check the eval:    
-
 # So annoying thing here is that we need to retokenizer our dataset every time we do an expert iteration.
 for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     shuffle_indices = torch.randperm(len(train_dataset))
