@@ -107,7 +107,9 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     # now we're going to choose a subset of them to make our expert iteration batch
     expert_batch_indices = shuffle_indices[:EXPERT_BATCH_SIZE]
     expert_batch_r1_zero = [train_dataset_r1_zero[i] for i in expert_batch_indices]
+    vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
     expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS)
+    print("Model.device: ", model.device)
     expert_batch_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for data in expert_batch], [data["response"] for data in expert_batch], tokenizer)
     input_ids = expert_batch_tokenized["input_ids"].to(device_hf)
     labels = expert_batch_tokenized["labels"].to(device_hf)
@@ -125,9 +127,9 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             print(f"EMA Loss: {ema_loss:.4f}")
             last_index = min(i * BATCH_SIZE + BATCH_SIZE, len(expert_batch))
             batch_indices = shuffle_expert_indices[i * BATCH_SIZE:last_index]
-            input_ids_batch = input_ids[batch_indices].to(device_hf)
-            labels_batch = labels[batch_indices].to(device_hf)
-            response_mask_batch = response_mask[batch_indices].to(device_hf)
+            input_ids_batch = input_ids[batch_indices]
+            labels_batch = labels[batch_indices]
+            response_mask_batch = response_mask[batch_indices]
 
             # Compute the policy log probs
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
