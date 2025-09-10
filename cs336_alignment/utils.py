@@ -322,18 +322,18 @@ def log_generations(
 
 
 # Most of this file assumes we do 1 rollout. This function breaks from that. Thus, there could be some backwards compatibility issues.
-def make_expert_iteration_batch
-    (vllm_model, 
-    data_batch,
-    num_rollouts,
-    max_tokens,
-    temperature,
-    top_p,
-    batch_size,
-    ) -> list[dict]:
-    prompts = [data["prompt"] for data in data_batch]
-    gt_answers = [data["answer"] for data in data_batch]
-    eval_sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
-    eval_sampling_params.stop = ["</answer>"]
-    eval_sampling_params.include_stop_str_in_output = True
-    rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, data_batch, eval_sampling_params)
+# def make_expert_iteration_batch
+#     (vllm_model, 
+#     data_batch,
+#     num_rollouts,
+#     max_tokens,
+#     temperature,
+#     top_p,
+#     batch_size,
+#     ) -> list[dict]:
+#     prompts = [data["prompt"] for data in data_batch]
+#     gt_answers = [data["answer"] for data in data_batch]
+#     eval_sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
+#     eval_sampling_params.stop = ["</answer>"]
+#     eval_sampling_params.include_stop_str_in_output = True
+#     rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, data_batch, eval_sampling_params)
