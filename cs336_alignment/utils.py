@@ -322,18 +322,33 @@ def log_generations(
 
 
 # Most of this file assumes we do 1 rollout. This function breaks from that. Thus, there could be some backwards compatibility issues.
-# def make_expert_iteration_batch
-#     (vllm_model, 
-#     data_batch,
-#     num_rollouts,
-#     max_tokens,
-#     temperature,
-#     top_p,
-#     batch_size,
-#     ) -> list[dict]:
-#     prompts = [data["prompt"] for data in data_batch]
-#     gt_answers = [data["answer"] for data in data_batch]
-#     eval_sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
-#     eval_sampling_params.stop = ["</answer>"]
-#     eval_sampling_params.include_stop_str_in_output = True
-#     rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, data_batch, eval_sampling_params)
+def make_expert_iteration_batch(
+    vllm_model, 
+    data_batch,
+    batch_size,
+    num_rollouts,
+    max_tokens,
+    temperature,
+    top_p,
+    ) -> list[dict]:
+
+    prompts = [data["prompt"] for data in data_batch]
+    gt_answers = [data["answer"] for data in data_batch]
+    eval_sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
+    eval_sampling_params.stop = ["</answer>"]
+    eval_sampling_params.min_tokens = 4
+    eval_sampling_params.include_stop_str_in_output = True
+    rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, data_batch, eval_sampling_params)
+
+    # now we'll filter through the responses and only keep the correct ones, 
+    # saving each one as a new training sample in a dataset 
+    out = []
+    for i, (prompt, gt, response, reward) in enumerate(zip(prompts, gt_answers, responses, rewards)):
+        for rew, output in zip(reward, response.outputs):
+            if rew["reward"] == 1:
+                out.append({
+                    "prompt": prompt,
+                    "response": output.text,
+                    "answer": gt,
+                })
+    return out
