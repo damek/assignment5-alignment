@@ -32,7 +32,6 @@ def get_args():
     parser.add_argument("--print_reward_every", type=int, default=10)
     parser.add_argument("--nb_sft_examples", type=int, default=None)
     return parser.parse_args()
-## later put these into argparse.
 
 args = get_args()
 
@@ -42,7 +41,6 @@ np.random.seed(SEED)
 BATCH_SIZE = args.batch_size
 GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
 LR = args.lr
-# WARMUP_STEPS = args.warmup_steps
 NUM_EPOCHS = args.num_epochs
 WANDB_PROJECT = "sft-experiment"
 PRINT_REWARD_EVERY = args.print_reward_every
