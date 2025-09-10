@@ -255,8 +255,8 @@ def log_generations(
 
     # Compute token entropy
     response_length = response_mask.sum(dim=-1)
+    avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
     if log_token_entropy:
-        avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
         input_ids = input_ids.to(hf_model.device)
         response_mask = response_mask.to(hf_model.device)
         for i in range(0, len(input_ids), batch_size):
@@ -266,6 +266,8 @@ def log_generations(
             logits=hf_model(input_ids_batch).logits
             token_entropy = compute_entropy(logits)
             avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/response_length[i:i+batch_size]
+    else:
+        avg_entropy.fill_(float("nan"))
 
     # Compute response length
     # response_length = (response_length / response_length).tolist()
@@ -280,13 +282,13 @@ def log_generations(
 
     # Create output dictionary
     out = []
-    for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy if log_token_entropy else None, response_length):
+    for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy, response_length):
         out.append({
             "prompt": p,
             "response": rtxt,
             "ground_truth": gt,
             "metrics": rew,  
-            "avg_token_entropy": float(ent) if log_token_entropy else None,
+            "avg_token_entropy": float(ent),
             "response_length": float(ln),
         })
     return {
