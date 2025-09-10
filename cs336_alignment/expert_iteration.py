@@ -26,7 +26,7 @@ def get_args():
     parser.add_argument("--num_epochs", type=int, default=1)
     parser.add_argument("--print_reward_every", type=int, default=10)
     parser.add_argument("--num_sft_examples", type=int, default=None)
-    parser.add_argument("--num_rollouts", type=int, default=10)
+    parser.add_argument("--num_rollouts", type=int, default=1)
     parser.add_argument("--num_expert_iterations", type=int, default=5)
     parser.add_argument("--expert_batch_size", type=int, default=512)
     return parser.parse_args()
