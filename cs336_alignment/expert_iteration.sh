@@ -12,4 +12,4 @@ for NUM_EPOCHS in 2; do
             done
         done
     done
-don
+done
