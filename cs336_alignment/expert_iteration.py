@@ -158,8 +158,8 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
-                gc.collect(); torch.cuda.empty_cache()
-                utils.mem("after step+empty_cache")
+                # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
+                utils.mem("after step")
 
     
         with torch.no_grad():
