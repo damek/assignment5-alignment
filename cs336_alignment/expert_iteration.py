@@ -148,7 +148,6 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             # Compute the loss
             normalize_constant = response_mask_batch.sum().item()
             loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, normalize_constant=normalize_constant)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
 
             if i == 0:
                 ema_loss = loss.item()
@@ -156,6 +155,7 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
                 ema_loss = 0.9 * ema_loss + 0.1 * loss.item()
             wandb.log({"ema_loss": ema_loss})
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
                 # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
