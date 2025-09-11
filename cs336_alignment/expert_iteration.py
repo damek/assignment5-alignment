@@ -150,7 +150,8 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             print("histogram: ", histogram)
             val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
             print("Percentage of correct examples: ", val_accuracy)
-            wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "expert_iteration": expert_iteration}) # make the x axis of plot epoch
+            step_count = num_epochs*expert_iteration + epoch
+            wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "expert_iteration": expert_iteration, "step_count": step_count}) # make the x axis of plot epoch
 
 
             utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
