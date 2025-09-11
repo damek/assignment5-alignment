@@ -370,3 +370,4 @@ def make_expert_iteration_batch(
     print("Length of expert batch: ", len(out))
     print("Total reward: ", total_reward)
     return out
+

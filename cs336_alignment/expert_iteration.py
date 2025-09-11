@@ -104,9 +104,7 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=LR)
 # train_labels = train_dataset_tokenized["labels"].to(device_hf)
 # train_response_mask = train_dataset_tokenized["response_mask"].to(device_hf)
 
-eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=MAX_TOKENS_EVAL)
-eval_sampling_params.stop = ["</answer>"]
-eval_sampling_params.include_stop_str_in_output = True
+
 # check the eval:    
 # So annoying thing here is that we need to retokenizer our dataset every time we do an expert iteration.
 utils.mem_reset_peak()
@@ -176,6 +174,14 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             step_count = NUM_EPOCHS*expert_iteration + epoch
             wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "expert_iteration": expert_iteration, "step_count": step_count, "expert_batch_size": EXPERT_BATCH_SIZE}) # make the x axis of plot epoch
 
-
+            outputs = [o.generation for o in log_generations_dict["examples"]]
+            finishes = [o.finish_reason for o in outputs]          # "stop" vs "length"
+            has_close = ["</answer>" in o.generation for o in log_generations_dict["examples"]]
+            trunc_rate = sum(f == "length" for f in finishes) / len(finishes)
+            close_rate = sum(has_close) / len(has_close)
+            wandb.log({
+                "val/trunc_rate": trunc_rate,
+                "val/has_close_rate": close_rate,
+            })
             utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
 
