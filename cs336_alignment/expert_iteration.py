@@ -153,6 +153,9 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
+                gc.collect(); torch.cuda.empty_cache()
+                utils.mem("after step+empty_cache")
+
     
         with torch.no_grad():
             print(f"Expert Iteration {expert_iteration}, Epoch {epoch}, Evaluating...")
