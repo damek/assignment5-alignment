@@ -105,6 +105,8 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=LR)
 # train_response_mask = train_dataset_tokenized["response_mask"].to(device_hf)
 
 eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=MAX_TOKENS_EVAL)
+eval_sampling_params.stop = ["</answer>"]
+eval_sampling_params.include_stop_str_in_output = True
 # check the eval:    
 # So annoying thing here is that we need to retokenizer our dataset every time we do an expert iteration.
 utils.mem_reset_peak()
