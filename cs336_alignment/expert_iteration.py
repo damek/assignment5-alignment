@@ -115,7 +115,7 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     expert_batch_r1_zero = [train_dataset_r1_zero[i] for i in expert_batch_indices]
     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
     utils.mem("after HF policy load") 
-    expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS, max_tokens=MAX_TOKENS)
+    expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS, max_tokens=MAX_TOKENS_TRAIN)
     utils.mem("after rollouts cpu side", "cuda:0")   # shows vLLM KV cache staying on cuda:0
     utils.mem("after rollouts host processing", "cuda:1")
     print("Model.device: ", model.device)
