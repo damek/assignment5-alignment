@@ -28,6 +28,8 @@ def get_args():
     parser.add_argument("--num_rollouts", type=int, default=1)
     parser.add_argument("--num_expert_iterations", type=int, default=5)
     parser.add_argument("--expert_batch_size", type=int, default=512)
+    parser.add_argument("--max_tokens_train", type=int, default=512)
+    parser.add_argument("--max_tokens_eval", type=int, default=1024)
     return parser.parse_args()
 
 args = get_args()
@@ -49,6 +51,8 @@ NUM_SFT_EXAMPLES = args.num_sft_examples
 NUM_EXPERT_ITERATIONS = args.num_expert_iterations
 NUM_ROLLOUTS = args.num_rollouts
 EXPERT_BATCH_SIZE = args.expert_batch_size
+MAX_TOKENS_TRAIN = args.max_tokens_train
+MAX_TOKENS_EVAL = args.max_tokens_eval
 
 # wandb.init(project="sft-experiment") 
 # set wandb experiment name to include expert_batch_size, epochs, num_rollouts, num_expert_iterations
@@ -111,7 +115,7 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     expert_batch_r1_zero = [train_dataset_r1_zero[i] for i in expert_batch_indices]
     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
     utils.mem("after HF policy load") 
-    expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS)
+    expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS, max_tokens=MAX_TOKENS)
     utils.mem("after rollouts cpu side", "cuda:0")   # shows vLLM KV cache staying on cuda:0
     utils.mem("after rollouts host processing", "cuda:1")
     print("Model.device: ", model.device)
@@ -160,7 +164,7 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
         with torch.no_grad():
             print(f"Expert Iteration {expert_iteration}, Epoch {epoch}, Evaluating...")
             vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
-            log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=BATCH_SIZE)
+            log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=BATCH_SIZE, max_tokens=MAX_TOKENS_EVAL)
             wandb.log(log_generations_dict) # index x by epoch
             histogram = utils.count_histogram(log_generations_dict["examples"])
             print("histogram: ", histogram)
