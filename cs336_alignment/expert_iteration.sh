@@ -4,9 +4,9 @@
 # number of epochs 1, 2
 # batch size 10
 
-BATCH_SIZE=10
+BATCH_SIZE=5
 GRADIENT_ACCUMULATION_STEPS=4
-MAX_TOKENS_TRAIN=256
+MAX_TOKENS_TRAIN=512
 for NUM_EPOCHS in 2; do
     for NUM_ROLLOUTS in 4 6; do
         for NUM_EXPERT_ITERATIONS in 5; do
