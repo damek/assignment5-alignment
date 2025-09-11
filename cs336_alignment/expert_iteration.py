@@ -8,7 +8,7 @@ import argparse
 import os
 from drgrpo_grader import r1_zero_reward_fn
 import numpy as np
-
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 # cuda visible devices
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
@@ -139,7 +139,7 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             wandb.log({"ema_loss": ema_loss})
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
                 optimizer.step()
-                optimizer.zero_grad()
+                optimizer.zero_grad(set_to_none=True)
     
         with torch.no_grad():
             print(f"Expert Iteration {expert_iteration}, Epoch {epoch}, Evaluating...")
