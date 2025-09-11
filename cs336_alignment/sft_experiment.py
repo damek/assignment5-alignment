@@ -120,6 +120,7 @@ for epoch in range(NUM_EPOCHS):
             ema_loss = 0.9 * ema_loss + 0.1 * loss.item()
         wandb.log({"ema_loss": ema_loss})
         if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
             optimizer.zero_grad(set_to_none=True)
 
