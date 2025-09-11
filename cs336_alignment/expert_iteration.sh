@@ -4,7 +4,7 @@
 # number of epochs 1, 2
 # batch size 10
 
-for NUM_EPOCHS in 1 2; do
+for NUM_EPOCHS in 2; do
     for NUM_ROLLOUTS in 2 4; do
         for NUM_EXPERT_ITERATIONS in 5; do
             for EXPERT_BATCH_SIZE in 512 1024 2048; do
