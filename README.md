@@ -18,6 +18,10 @@
 - SFT experiment: run SFT on the GSM8k dataset
     - Code [sft_experiment.py](./cs336_alignment/sft_experiment.py)
     - Results [sft_experiment.md](./cs336_alignment/outputs/sft_experiment.md)
+- Expert iteration: run expert iteration on the GSM8k dataset
+    - Code [expert_iteration.py](./cs336_alignment/expert_iteration.py)
+        - Bash script [expert_iteration.sh](./cs336_alignment/expert_iteration.sh)
+    - Results [expert_iteration.md](./cs336_alignment/outputs/expert_iteration.md)
 
 ## How to run
 
