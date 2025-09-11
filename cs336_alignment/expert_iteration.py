@@ -175,7 +175,7 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "expert_iteration": expert_iteration, "step_count": step_count, "expert_batch_size": EXPERT_BATCH_SIZE}) # make the x axis of plot epoch
 
             outputs = [o["generation"] for o in log_generations_dict["examples"]]
-            finishes = [o.finish_reason for o in outputs]          # "stop" vs "length"
+            finishes = [o[0].finish_reason for o in outputs]          # "stop" vs "length"
             has_close = ["</answer>" in o.generation for o in log_generations_dict["examples"]]
             trunc_rate = sum(f == "length" for f in finishes) / len(finishes)
             close_rate = sum(has_close) / len(has_close)
