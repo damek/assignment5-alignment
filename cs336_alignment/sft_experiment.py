@@ -112,7 +112,8 @@ for epoch in range(NUM_EPOCHS):
         # Compute the policy log probs
         policy_log_probs = utils.get_response_log_probs(model, input_ids, labels, return_token_entropy=False)["log_probs"]
 
-        loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS)
+        normalize_constant = response_mask.sum().item()
+        loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask, GRADIENT_ACCUMULATION_STEPS, normalize_constant=normalize_constant)
         if i == 0:
             ema_loss = loss.item()
         else:
@@ -120,7 +121,7 @@ for epoch in range(NUM_EPOCHS):
         wandb.log({"ema_loss": ema_loss})
         if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
             optimizer.step()
-            optimizer.zero_grad()
+            optimizer.zero_grad(set_to_none=True)
 
     with torch.no_grad():
         vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
