@@ -134,7 +134,10 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
 
             # Compute the loss
+            normalize_constant = response_mask_batch.sum()).mean().item()
             loss, _ = utils.sft_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+
             if i == 0:
                 ema_loss = loss.item()
             else:
