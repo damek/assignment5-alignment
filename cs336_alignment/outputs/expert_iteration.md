@@ -30,4 +30,5 @@ bash expert_iteration.sh
 
 Ran out of compute and energy, but lessons learned: 
 1. Need a smaller stepsize to avoid over fitting to any one batch. Catastrophic forgetting is real.
-2. It takes forever to test new ideas.
+2. Logging the entropy of model responses was slowing the code down because I didn't realize that VLLM could return log probs. Instead, I was passing the responses through the model. In any case, using the VLLM solution would speed stuff up.
+3. When doing multiple epochs per expert iteration step, you should probably decrease the stepsize over time. 
