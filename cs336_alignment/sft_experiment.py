@@ -45,7 +45,10 @@ WANDB_PROJECT = "sft-experiment"
 NUM_SFT_EXAMPLES = args.num_sft_examples
 
 # experiment name to include num_sft_examples, num_epochs, and lr
-wandb.init(project="sft-experiment", name=f"num_sft_examples_{NUM_SFT_EXAMPLES}_num_epochs_{NUM_EPOCHS}_lr_{LR}") 
+if NUM_SFT_EXAMPLES is not None: 
+    wandb.init(project="sft-experiment", name=f"num_sft_examples_{NUM_SFT_EXAMPLES}_num_epochs_{NUM_EPOCHS}_lr_{LR}") 
+else:
+    wandb.init(project="sft-experiment", name=f"num_sft_examples_all_num_epochs_{NUM_EPOCHS}_lr_{LR}") 
 # Setup wandb metrics
 wandb.define_metric("train_step") # the x‑axis for training
 wandb.define_metric("eval_step") # the x‑axis for evaluation

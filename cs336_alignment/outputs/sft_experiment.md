@@ -9,6 +9,8 @@ Deliverable: Validation accuracy curves associated with different dataset sizes.
 
 ```bash
 uv run sft_experiment.py --num_sft_examples ?? --batch_size 10 
+# or 
+bash sft_experiment.sh
 ```
 
 ![](figures/sft_trainset_vs_validation.png)
@@ -18,11 +20,17 @@ uv run sft_experiment.py --num_sft_examples ?? --batch_size 10
 
 Filter the reasoning SFT examples to only include examples that produce the correct answer. Run
 SFT on the (full) filtered dataset and report the size of the filtered dataset and the validation
-accuracy you achieve.
+accuracy you achieve. 
 
 First filtered the dataset
 ```bash
 uv run filter_gsm8k_positives.py
+```
+Then run 
+```bash 
+uv run sft_experiment.py --train_dataset_path ../data/gsm8k/train_positives.jsonl
+# or 
+bash sft_experiment.sh # this will run all the experiments.
 ```
 
 Note the original accuracy is around 2%.
@@ -30,5 +38,3 @@ Note the original accuracy is around 2%.
 ![](figures/sft_filter_positives.png)
 
 
-Deliverable: Report the size of the dataset and the validation accuracy curve you achieve.
-Compare your findings to the previous SFT experiment.
