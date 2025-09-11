@@ -8,4 +8,5 @@ done
 
 uv run sft_experiment.py
 
-uv run sft_experiment.py --train_dataset_path ../data/gsm8k/train_positives.jsonl
+uv run filter_gsm8k_positives.py
+uv run sft_experiment.py --train_dataset_path ../data/gsm8k/train_positives.jsonl --num_epochs 2
