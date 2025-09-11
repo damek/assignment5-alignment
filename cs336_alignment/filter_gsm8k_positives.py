@@ -17,7 +17,7 @@ eval_sampling_params.include_stop_str_in_output = True
 rewards, responses = utils.evaluate_vllm(model, r1_zero_reward_fn, dataset_r1_zero, eval_sampling_params)
 
 
-outputs_positives = [i for i, reward in enumerate(rewards) if reward["reward"] == 1]
+outputs_positives = [i for i, reward in enumerate(rewards) if reward[0]["reward"] == 1]
 print(len(outputs_positives))
 
 with open("../data/gsm8k/train_positives.jsonl", "w") as f:
