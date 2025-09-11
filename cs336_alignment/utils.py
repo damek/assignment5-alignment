@@ -221,12 +221,10 @@ def get_response_log_probs(
     mem(f"tokenized (B={input_ids.size(0)}, T={input_ids.size(1)})")
     logits = model(input_ids).logits
     mem("after forward")
-    log_probs = F.log_softmax(logits, dim=-1)
+
+    logZ = logZ.logsumexp(dim=-1)
+    log_probs = logits.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)  - logZ
     mem("after logprob gather")
-
-    logZ = logits.logsumexp(dim=-1, keepdim=True)
-    log_probs = (logits - logZ).gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
-
     if return_token_entropy:
         entropy = compute_entropy(logits)
         return {"log_probs": log_probs, "token_entropy": entropy}
