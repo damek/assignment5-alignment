@@ -29,8 +29,8 @@ def get_args():
     parser.add_argument("--num_rollouts", type=int, default=1)
     parser.add_argument("--num_expert_iterations", type=int, default=5)
     parser.add_argument("--expert_batch_size", type=int, default=512)
-    parser.add_argument("--max_tokens_train", type=int, default=512)
-    parser.add_argument("--max_tokens_eval", type=int, default=1024)
+    parser.add_argument("--max_tokens_train", type=int, default=640)
+    parser.add_argument("--max_tokens_eval", type=int, default=640)
     return parser.parse_args()
 
 args = get_args()
@@ -104,7 +104,7 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=LR)
 # train_labels = train_dataset_tokenized["labels"].to(device_hf)
 # train_response_mask = train_dataset_tokenized["response_mask"].to(device_hf)
 
-eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
+eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=MAX_TOKENS_EVAL)
 # check the eval:    
 # So annoying thing here is that we need to retokenizer our dataset every time we do an expert iteration.
 utils.mem_reset_peak()
