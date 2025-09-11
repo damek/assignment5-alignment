@@ -219,8 +219,7 @@ def get_response_log_probs(
     ) -> dict[str, torch.Tensor]:
 
     mem(f"tokenized (B={input_ids.size(0)}, T={input_ids.size(1)})")
-    with torch.inference_mode():
-        logits = model(input_ids).logits
+    logits = model(input_ids).logits
     mem("after forward")
     log_probs = F.log_softmax(logits, dim=-1)
     mem("after logprob gather")
