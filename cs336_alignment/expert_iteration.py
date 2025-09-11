@@ -8,6 +8,7 @@ import argparse
 import os
 from drgrpo_grader import r1_zero_reward_fn
 import numpy as np
+import gc
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 # cuda visible devices
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
