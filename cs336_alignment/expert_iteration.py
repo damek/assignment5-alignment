@@ -121,7 +121,7 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
         for i in range(len(expert_batch) // BATCH_SIZE):
             print(f"Expert Iteration {expert_iteration}, Epoch {epoch}, Batch {i}/{len(expert_batch) // BATCH_SIZE}")
             print(f"EMA Loss: {ema_loss:.4f}")
-            last_index = min(i * BATCH_SIZE + BATCH_SIZE, len(expert_batch))
+            last_index = min((i+1) * BATCH_SIZE, len(expert_batch))
             batch_indices = shuffle_expert_indices[i * BATCH_SIZE:last_index]
             input_ids_batch = input_ids[batch_indices, :]
             labels_batch = labels[batch_indices, :]
