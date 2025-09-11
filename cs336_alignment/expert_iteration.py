@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument("--num_expert_iterations", type=int, default=5)
     parser.add_argument("--expert_batch_size", type=int, default=512)
     parser.add_argument("--max_tokens_train", type=int, default=640)
-    parser.add_argument("--max_tokens_eval", type=int, default=640)
+    parser.add_argument("--max_tokens_eval", type=int, default=1024)
     return parser.parse_args()
 
 args = get_args()
