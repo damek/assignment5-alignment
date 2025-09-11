@@ -70,10 +70,12 @@ device_hf = "cuda:1"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(model_id).to(device_hf)
 print("Model Device: ", model.device)
+utils.mem("after HF policy load")
 
 # load vllm model
 print("Loading vllm model...")
 vllm_model = vllm_utils.init_vllm(model_id, device_vllm, SEED)
+utils.mem("after vLLM init", "cuda:0")
 
 print("Loading model...")
 print("Loading dataset...")
@@ -100,13 +102,18 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=LR)
 eval_sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
 # check the eval:    
 # So annoying thing here is that we need to retokenizer our dataset every time we do an expert iteration.
+utils.mem_reset_peak()
+utils.mem("EI step start (before rollouts)")
 for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     shuffle_indices = torch.randperm(len(train_dataset))
     # now we're going to choose a subset of them to make our expert iteration batch
     expert_batch_indices = shuffle_indices[:EXPERT_BATCH_SIZE]
     expert_batch_r1_zero = [train_dataset_r1_zero[i] for i in expert_batch_indices]
     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
+    utils.mem("after HF policy load") 
     expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS)
+    utils.mem("after rollouts cpu side", "cuda:0")   # shows vLLM KV cache staying on cuda:0
+    utils.mem("after rollouts host processing", "cuda:1")
     print("Model.device: ", model.device)
     if len(expert_batch) == 0:
         print("No reward, skipping expert iteration.")

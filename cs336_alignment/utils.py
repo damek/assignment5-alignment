@@ -6,11 +6,23 @@ import json
 import re
 from vllm import LLM, SamplingParams
 from drgrpo_grader import r1_zero_reward_fn
+import gc
 
 PROMPT_PATH = "prompts/r1_zero.prompt"
 
 # the way the gsm8k dataset is format, the final part of the answer has a ### at the end followed by GT. 
 # Thanks to gpt5 for writing this one.
+
+def mem(tag, device="cuda:1"):
+    torch.cuda.synchronize(device)
+    alloc = torch.cuda.memory_allocated(device) / 1e9
+    reserved = torch.cuda.memory_reserved(device) / 1e9
+    peak = torch.cuda.max_memory_allocated(device) / 1e9
+    print(f"[MEM {device}][{tag}] alloc={alloc:.2f} GB  reserved={reserved:.2f} GB  peak={peak:.2f} GB")
+
+def mem_reset_peak(device="cuda:1"):
+    torch.cuda.reset_peak_memory_stats(device)
+
 def data_set_to_prompt_response_answer(records):
     """
     records: iterable of dicts like {"question": str, "answer": str}
@@ -206,10 +218,15 @@ def get_response_log_probs(
     return_token_entropy,
     ) -> dict[str, torch.Tensor]:
 
-    logits = model(input_ids).logits
+    mem(f"tokenized (B={input_ids.size(0)}, T={input_ids.size(1)})")
+    with torch.inference_mode():
+        logits = model(input_ids).logits
+    mem("after forward")
     log_probs = F.log_softmax(logits, dim=-1)
-    
-    log_probs = log_probs.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
+    mem("after logprob gather")
+
+    logZ = logits.logsumexp(dim=-1, keepdim=True)
+    log_probs = (logits - logZ).gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
 
     if return_token_entropy:
         entropy = compute_entropy(logits)
