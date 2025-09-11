@@ -108,6 +108,9 @@ for expert_iteration in range(NUM_EXPERT_ITERATIONS):
     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
     expert_batch = utils.make_expert_iteration_batch(vllm_model, expert_batch_r1_zero, EXPERT_BATCH_SIZE, NUM_ROLLOUTS)
     print("Model.device: ", model.device)
+    if len(expert_batch) == 0:
+        print("No reward, skipping expert iteration.")
+        continue
     expert_batch_tokenized = utils.tokenize_prompt_and_output([data["prompt"] for data in expert_batch], [data["response"] for data in expert_batch], tokenizer)
     input_ids = expert_batch_tokenized["input_ids"].to(device_hf)
     labels = expert_batch_tokenized["labels"].to(device_hf)
