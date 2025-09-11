@@ -7,3 +7,5 @@ for NUM_SFT_EXAMPLES in 128 256 512; do
 done
 
 uv run sft_experiment.py
+
+uv run sft_experiment.py --train_dataset_path ../data/gsm8k/train_positives.jsonl
