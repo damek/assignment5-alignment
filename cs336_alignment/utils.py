@@ -222,7 +222,7 @@ def get_response_log_probs(
     logits = model(input_ids).logits
     mem("after forward")
 
-    logZ = logZ.logsumexp(dim=-1)
+    logZ = logits.logsumexp(dim=-1)
     log_probs = logits.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)  - logZ
     mem("after logprob gather")
     if return_token_entropy:
