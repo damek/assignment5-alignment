@@ -77,13 +77,13 @@ def compute_policy_gradient_loss(
         return compute_naive_policy_gradient_loss(
             raw_rewards_or_advantages=raw_rewards,
             policy_log_probs=policy_log_probs,
-        )
+        ), {}
     elif loss_type == "reinforce_with_baseline":
         assert advantages is not None
         return compute_naive_policy_gradient_loss(
             raw_rewards_or_advantages=advantages,
             policy_log_probs=policy_log_probs,
-        )
+        ), {}
     elif loss_type == "grpo_clip":
         assert advantages is not None
         assert old_log_probs is not None
