@@ -146,7 +146,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     labels = tokenize_samples["labels"].to(device_hf)
     response_mask = tokenize_samples["response_mask"].to(device_hf)
     advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(r1_zero_reward_fn, responses, [data["answer"] for data in train_dataset_r1_zero_grpo_step], GROUP_SIZE, ADVANTAGE_EPS, USE_STD_NORMALIZATION)
-    old_log_probs = torch.zeros(input_ids.shape, dtype=torch.float32)
+    old_log_probs = torch.zeros(input_ids.shape, dtype=torch.float32).to(device_hf)
     with torch.no_grad():
         for i in range(0, 128):
             last_index = min((i+1) * 2, ROLLOUT_BATCH_SIZE)
