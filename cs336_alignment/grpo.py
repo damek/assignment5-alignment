@@ -11,7 +11,9 @@ def compute_group_normalized_rewards(
     normalize_by_std,
     ):
 
-    rewards = reward_fn(rollout_responses, repeated_ground_truths)
+    for reward in rollout_responses:
+        reward = reward_fn(reward, repeated_ground_truths)
+        rewards.append(reward)
 
     if normalize_by_std:
         rewards = (rewards - rewards.mean()) / (rewards.std() + advantage_eps)
