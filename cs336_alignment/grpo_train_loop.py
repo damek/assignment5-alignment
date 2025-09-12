@@ -64,7 +64,7 @@ GRADIENT_ACCUMULATION_STEPS: int = args.gradient_accumulation_steps # microbatch
 TEMPERATURE: float = 1
 TOP_P: float = 1
 GPU_MEMORY_UTILIZATION: float = 0.85
-LOSS_TYPE = "grpo_clip"
+LOSS_TYPE = "reinforce_with_baseline"
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 
 assert TRAIN_BATCH_SIZE % GRADIENT_ACCUMULATION_STEPS == 0, (
@@ -179,7 +179,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             print("response_mask_batch.shape: ", response_mask_batch.shape)
             print("input_ids_batch.shape: ", input_ids_batch.shape)
             print("labels_batch.shape: ", labels_batch.shape)
-            loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=CLIPRANGE)
+            loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None)
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
