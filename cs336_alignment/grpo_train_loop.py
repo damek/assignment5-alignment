@@ -81,7 +81,7 @@ assert TRAIN_BATCH_SIZE >= GROUP_SIZE, (
 n_microbatches_per_rollout_batch = ROLLOUT_BATCH_SIZE // micro_train_batch_size
 
 # set wandb experiment name to include num_grpo_steps, advantage_eps, rollout_batch_size, group_size, epochs_per_rollout_batch, train_batch_size, gradient_accumulation_steps, loss_type, use_std_normalization
-wandb.init(project=WANDB_PROJECT, name=f"num_grpo_steps_{NUM_GRPO_STEPS}_advantage_eps_{ADVANTAGE_EPS}_rollout_batch_size_{ROLLOUT_BATCH_SIZE}_group_size_{GROUP_SIZE}_epochs_per_rollout_batch_{EPOCHS_PER_ROLLOUT_BATCH}_train_batch_size_{TRAIN_BATCH_SIZE}_gradient_accumulation_steps_{GRADIENT_ACCUMULATION_STEPS}_loss_type_{loss_type}_use_std_normalization_{USE_STD_NORMALIZATION}")
+wandb.init(project=WANDB_PROJECT, name=f"num_grpo_steps_{NUM_GRPO_ITERATIONS}_advantage_eps_{ADVANTAGE_EPS}_rollout_batch_size_{ROLLOUT_BATCH_SIZE}_group_size_{GROUP_SIZE}_epochs_per_rollout_batch_{EPOCHS_PER_ROLLOUT_BATCH}_train_batch_size_{TRAIN_BATCH_SIZE}_gradient_accumulation_steps_{GRADIENT_ACCUMULATION_STEPS}_loss_type_{LOSS_TYPE}_use_std_normalization_{USE_STD_NORMALIZATION}")
 # Setup wandb metrics
 wandb.define_metric("train_step") # the x‑axis for training
 wandb.define_metric("eval_step") # the x‑axis for evaluation
