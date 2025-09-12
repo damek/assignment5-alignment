@@ -22,6 +22,8 @@
     - Code [expert_iteration.py](./cs336_alignment/expert_iteration.py)
         - Bash script [expert_iteration.sh](./cs336_alignment/expert_iteration.sh)
     - Results [expert_iteration.md](./cs336_alignment/outputs/expert_iteration.md)
+- Computing Group Normalized Rewards: 
+    - Code [grpo.py](./cs336_alignment/grpo.py)
 
 ## How to run
 

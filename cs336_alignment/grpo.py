@@ -1,6 +1,6 @@
 import torch
 import cs336_alignment.utils as utils 
-
+from einops import einsum
 
 def compute_group_normalized_rewards(
     reward_fn,
@@ -37,3 +37,11 @@ def compute_group_normalized_rewards(
     }        
 
     return advantages, raw_rewards, metadata
+
+
+def compute_naive_policy_gradient_loss(
+    raw_rewards_or_advantages: torch.Tensor,
+    policy_log_probs: torch.Tensor,
+    ) -> torch.Tensor:
+
+    return einsum(raw_rewards_or_advantages, policy_log_probs, "batch, batch sequence -> batch sequence")
