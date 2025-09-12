@@ -160,8 +160,9 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     print("histogram: ", histogram)
     batch_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
     print("Percentage of correct examples: ", batch_accuracy)
+    wandb.log({"batch_accuracy": batch_accuracy, "grpo_iteration": grpo_iteration})
 
-    for epoch in range(NUM_EPOCHS):
+    for epoch in range(EPOCHS_PER_ROLLOUT_BATCH):
         # Could shuffle here.
         for i in range(0, ROLLOUT_BATCH_SIZE // micro_train_batch_size):
             last_index = min((i+1) * micro_train_batch_size, ROLLOUT_BATCH_SIZE)
