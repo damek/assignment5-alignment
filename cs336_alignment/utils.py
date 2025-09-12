@@ -5,7 +5,7 @@ import torch
 import json
 import re
 from vllm import LLM, SamplingParams
-from drgrpo_grader import r1_zero_reward_fn
+from cs336_alignment.drgrpo_grader import r1_zero_reward_fn
 import gc
 
 PROMPT_PATH = "prompts/r1_zero.prompt"
