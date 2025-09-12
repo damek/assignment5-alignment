@@ -11,10 +11,12 @@ def compute_group_normalized_rewards(
     normalize_by_std,
     ):
 
-    for reward in rollout_responses:
-        reward = reward_fn(reward, repeated_ground_truths)
+    rewards = []
+    for r in rollout_responses:
+        reward = reward_fn(r, repeated_ground_truths)
         rewards.append(reward)
 
+    rewards = torch.tensor(rewards)
     if normalize_by_std:
         rewards = (rewards - rewards.mean()) / (rewards.std() + advantage_eps)
     else:
