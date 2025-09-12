@@ -12,6 +12,7 @@ def compute_group_normalized_rewards(
     ):
 
     rewards = []
+    raw_rewards = []
     for r in rollout_responses:
         reward = reward_fn(r, repeated_ground_truths)
         rewards.append(reward)
