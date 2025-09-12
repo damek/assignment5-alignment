@@ -20,11 +20,13 @@ def compute_group_normalized_rewards(
         raw_rewards.append(reward["reward"])
 
     raw_rewards = torch.tensor(raw_rewards)
-    if normalize_by_std:
-        advantages = (raw_rewards - raw_rewards.mean()) / (raw_rewards.std() + advantage_eps)
-    else:
-        advantages = raw_rewards - raw_rewards.mean()
-
+    advantages = torch.zeros_like(raw_rewards)
+    for i in range(0, len(raw_rewards), group_size):
+        group_rewards = raw_rewards[i:i+group_size]
+        if normalize_by_std:
+            advantages[i:i+group_size] = (group_rewards - group_rewards.mean()) / (group_rewards.std() + advantage_eps)
+        else:
+            advantages[i:i+group_size] = group_rewards - group_rewards.mean()
 
     metadata = {
         "rewards_mean": raw_rewards.mean(),
