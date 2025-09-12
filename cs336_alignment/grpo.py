@@ -129,4 +129,5 @@ def grpo_microbatch_train_step(
     loss = masked_mean(loss, response_mask)
     loss /= max(1, gradient_accumulation_steps)
     loss.backward()
+    metadata["loss"] = loss
     return loss, metadata
