@@ -2,7 +2,7 @@ import torch
 import cs336_alignment.utils as utils 
 from einops import einsum
 from typing import Literal
-from vllm import LLM
+from vllm import LLM, SamplingParams
 
 def compute_group_normalized_rewards(
     reward_fn,
