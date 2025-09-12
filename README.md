@@ -26,6 +26,9 @@
     - Code [grpo.py](./cs336_alignment/grpo.py)
 - Computing Naive Policy Gradient Loss:
     - Code [grpo.py](./cs336_alignment/grpo.py)
+- Computing Policy Gradient Loss:
+    - Code [grpo.py](./cs336_alignment/grpo.py)
+
 
 ## How to run
 
