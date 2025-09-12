@@ -1,5 +1,5 @@
 import torch
-import utils 
+import cs336_alignment.utils as utils 
 
 
 def compute_group_normalized_rewards(
