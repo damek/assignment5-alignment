@@ -52,3 +52,8 @@ def compute_grpo_clip_loss(
     old_log_probs: torch.Tensor,
     cliprange: float,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+
+    importance_ratios = torch.exp(policy_log_probs - old_log_probs)
+    term_1 = importance_ratios * advantages
+    term_2 = torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange) * advantages
+    return -torch.min(term_1, term_2)
