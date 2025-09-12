@@ -162,7 +162,7 @@ def sample_rollouts(
             reward_flattened.append(r)
     response_flattened = []
     for response in responses:
-        for r in response:
+        for r in response.outputs:
             response_flattened.append(r)
     # flatten responses out so we can just return the list 
     # the structure is a response has num_rollouts outputs, each with a text field
