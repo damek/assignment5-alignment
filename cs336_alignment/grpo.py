@@ -135,3 +135,32 @@ def grpo_microbatch_train_step(
         raise ValueError("Loss already in metadata")
     metadata["loss"] = loss
     return loss, metadata
+
+def sample_rollouts(
+    vllm_model: vllm.LLM,
+    dataset: list[dict],
+    num_rollouts: int,
+    max_tokens = 1024,
+    temperature = 1.0,
+    top_p = 1.0,
+) -> list[str]:
+    sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
+    sampling_params.stop = ["</answer>"]
+    sampling_params.include_stop_str_in_output = True
+    rewards, responses = utils.evaluate_vllm(
+        vllm_model=vllm_model,
+        dataset=dataset,
+        eval_sampling_params=sampling_params,
+    )
+    # now flatten the rewards and responses
+    reward_flattened = []
+    for reward in rewards:
+        for r in reward:
+            reward_flattened.append(r)
+    response_flattened = []
+    for response in responses:
+        for r in response:
+            response_flattened.append(r)
+    # flatten responses out so we can just return the list 
+    # the structure is a response has num_rollouts outputs, each with a text field
+    return reward_flattened, response_flattened
