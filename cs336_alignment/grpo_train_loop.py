@@ -25,7 +25,7 @@ def get_args():
     parser.add_argument("--output_path", type=str, default="outputs/sft_experiment.jsonl")
     parser.add_argument("--train_batch_size", type=int, default=256)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=2)
-    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--epochs_per_rollout_batch", type=int, default=1)
     parser.add_argument("--num_sft_examples", type=int, default=None)
     parser.add_argument("--rollout_batch_size", type=int, default=256)
@@ -47,7 +47,6 @@ OUTPUT_PATH = args.output_path
 SEED = 42
 torch.manual_seed(SEED)
 np.random.seed(SEED)
-BATCH_SIZE = args.batch_size
 GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
 LR = args.lr
 WANDB_PROJECT = "cs336-grpo-experiment"
