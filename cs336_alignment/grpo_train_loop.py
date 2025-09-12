@@ -175,13 +175,6 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             response_mask_batch = response_mask[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
             normalize_constant = response_mask_batch.sum().item()
-            print("raw_rewards.shape: ", raw_rewards[batch_indices].shape)
-            print("advantages.shape: ", advantages[batch_indices].shape)
-            print("old_log_probs.shape: ", old_log_probs[batch_indices,:].shape)
-            print("policy_log_probs.shape: ", policy_log_probs.shape)
-            print("response_mask_batch.shape: ", response_mask_batch.shape)
-            print("input_ids_batch.shape: ", input_ids_batch.shape)
-            print("labels_batch.shape: ", labels_batch.shape)
             loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None)
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
