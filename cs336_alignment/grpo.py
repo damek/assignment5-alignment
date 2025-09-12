@@ -15,8 +15,9 @@ def compute_group_normalized_rewards(
     for r in rollout_responses:
         reward = reward_fn(r, repeated_ground_truths)
         rewards.append(reward)
+        raw_rewards.append(reward["reward"])
 
-    raw_rewards = torch.tensor(rewards)
+    raw_rewards = torch.tensor(raw_rewards)
     if normalize_by_std:
         advantages = (raw_rewards - raw_rewards.mean()) / (raw_rewards.std() + advantage_eps)
     else:
@@ -28,6 +29,7 @@ def compute_group_normalized_rewards(
         "rewards_std": raw_rewards.std(),
         "rewards_min": raw_rewards.min(),
         "rewards_max": raw_rewards.max(),
+        "fine_grained_rewards": rewards,
     }        
 
     return advantages, raw_rewards, metadata
