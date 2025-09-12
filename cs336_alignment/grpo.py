@@ -57,3 +57,37 @@ def compute_grpo_clip_loss(
     term_1 = importance_ratios * advantages
     term_2 = torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange) * advantages
     return -torch.min(term_1, term_2)
+
+def compute_policy_gradient_loss(
+    policy_log_probs: torch.Tensor,
+    loss_type: Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"],
+    raw_rewards: torch.Tensor | None = None,
+    advantages: torch.Tensor | None = None,
+    old_log_probs: torch.Tensor | None = None,
+    cliprange: float | None = None,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+
+    if loss_type == "no_baseline":
+        assert raw_rewards is not None
+        return compute_naive_policy_gradient_loss(
+            raw_rewards_or_advantages=raw_rewards,
+            policy_log_probs=policy_log_probs,
+        )
+    elif loss_type == "reinforce_with_baseline":
+        assert advantages is not None
+        return compute_naive_policy_gradient_loss(
+            raw_rewards_or_advantages=advantages,
+            policy_log_probs=policy_log_probs,
+        )
+    elif loss_type == "grpo_clip":
+        assert advantages is not None
+        assert old_log_probs is not None
+        assert cliprange is not None
+        return compute_grpo_clip_loss(
+            advantages=advantages,
+            policy_log_probs=policy_log_probs,
+            old_log_probs=old_log_probs,
+            cliprange=cliprange,
+        )
+    else:
+        raise ValueError(f"Invalid loss type: {loss_type}")
