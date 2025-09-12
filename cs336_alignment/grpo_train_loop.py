@@ -149,8 +149,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     old_log_probs = torch.zeros_like(input_ids)
     with torch.no_grad():
         for i in range(0, 2):
-            last_index = min((i+1) * micro_train_batch_size, ROLLOUT_BATCH_SIZE)
-            batch_indices = torch.arange(i * micro_train_batch_size, last_index)
+            last_index = min((i+1) * 2, ROLLOUT_BATCH_SIZE)
+            batch_indices = torch.arange(i * 2, last_index)
             input_ids_batch = input_ids[batch_indices, :]
             labels_batch = labels[batch_indices, :]
             response_mask_batch = response_mask[batch_indices, :]
@@ -165,8 +165,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     for epoch in range(EPOCHS_PER_ROLLOUT_BATCH):
         # Could shuffle here.
         for i in range(0, 128):
-            last_index = min((i+1) * micro_train_batch_size, ROLLOUT_BATCH_SIZE)
-            batch_indices = torch.arange(i * micro_train_batch_size, last_index)
+            last_index = min((i+1) * 2, ROLLOUT_BATCH_SIZE)
+            batch_indices = torch.arange(i * 2, last_index)
             input_ids_batch = input_ids[batch_indices, :]
             labels_batch = labels[batch_indices, :]
             response_mask_batch = response_mask[batch_indices, :]
