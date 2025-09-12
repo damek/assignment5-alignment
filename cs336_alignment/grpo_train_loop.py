@@ -54,7 +54,7 @@ MAX_TOKENS_TRAIN = args.max_tokens_train
 MAX_TOKENS_EVAL = args.max_tokens_eval
 
 
-NUM_GRPO_STEPS: int = args.num_grpo_steps
+NUM_GRPO_ITERATIONS: int = args.num_grpo_iterations
 ADVANTAGE_EPS: float = 1e-6
 ROLLOUT_BATCH_SIZE: int = args.rollout_batch_size
 GROUP_SIZE: int = args.group_size
@@ -131,7 +131,7 @@ utils.mem("EI step start (before rollouts)")
 
 
 
-for grpo_iteration in range(NUM_GRPO_STEPS):
+for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     # first thing to do is sample TRAIN_BATCH_SIZE examples from the train dataset    
     sample = torch.randperm(len(train_dataset))[:n_prompts_per_rollout_batch]
     train_dataset_r1_zero_grpo_step = [train_dataset_r1_zero[i] for i in sample]
