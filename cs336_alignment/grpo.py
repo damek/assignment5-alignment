@@ -1,6 +1,7 @@
 import torch
 import cs336_alignment.utils as utils 
 from einops import einsum
+from typing import Literal
 
 def compute_group_normalized_rewards(
     reward_fn,
