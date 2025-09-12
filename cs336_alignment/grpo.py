@@ -160,9 +160,16 @@ def sample_rollouts(
     for reward in rewards:
         for r in reward:
             reward_flattened.append(r)
-    response_flattened = []
-    for response in responses:
+    out_flattened = []
+    for k, response in enumerate(responses):
         for r in response.outputs:
+            out_flattened.append(
+                {
+                    "prompt": dataset[k]["prompt"],
+                    "response": r.text,
+                    "answer": dataset[k]["answer"],
+                }
+            )
             response_flattened.append(r.text)
     # flatten responses out so we can just return the list 
     # the structure is a response has num_rollouts outputs, each with a text field)
