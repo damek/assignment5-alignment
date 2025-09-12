@@ -33,7 +33,7 @@ def get_args():
     parser.add_argument("--group_size", type=int, default=8)
     parser.add_argument("--max_tokens_train", type=int, default=640)
     parser.add_argument("--max_tokens_eval", type=int, default=1024)
-    parser.add_argument("--loss_type", type=Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"], default="reinforce_with_baseline")
+    # parser.add_argument("--loss_type", type=Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"], default="reinforce_with_baseline")
     parser.add_argument("--use_std_normalization", type=bool, default=True)
     return parser.parse_args()
 
@@ -65,7 +65,7 @@ GRADIENT_ACCUMULATION_STEPS: int = args.gradient_accumulation_steps # microbatch
 TEMPERATURE: float = 1
 TOP_P: float = 1
 GPU_MEMORY_UTILIZATION: float = 0.85
-LOSS_TYPE = args.loss_type
+LOSS_TYPE = "grpo_clip"
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 
 assert TRAIN_BATCH_SIZE % GRADIENT_ACCUMULATION_STEPS == 0, (
