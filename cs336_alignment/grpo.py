@@ -56,7 +56,10 @@ def compute_grpo_clip_loss(
     importance_ratios = torch.exp(policy_log_probs - old_log_probs)
     term_1 = importance_ratios * advantages
     term_2 = torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange) * advantages
-    return -torch.min(term_1, term_2)
+    metadata = {
+        "clipped_or_not": torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange) == importance_ratios,
+    }
+    return -torch.min(term_1, term_2), metadata
 
 def compute_policy_gradient_loss(
     policy_log_probs: torch.Tensor,
