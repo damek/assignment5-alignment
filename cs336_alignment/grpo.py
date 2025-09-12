@@ -2,6 +2,7 @@ import torch
 import cs336_alignment.utils as utils 
 from einops import einsum
 from typing import Literal
+from vllm import LLM
 
 def compute_group_normalized_rewards(
     reward_fn,
@@ -137,7 +138,7 @@ def grpo_microbatch_train_step(
     return loss, metadata
 
 def sample_rollouts(
-    vllm_model: vllm.LLM,
+    vllm_model,
     dataset: list[dict],
     num_rollouts: int,
     max_tokens = 1024,
