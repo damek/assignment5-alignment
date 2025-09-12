@@ -30,7 +30,8 @@
     - Code [grpo.py](./cs336_alignment/grpo.py)
 - Computing Masked Mean:
     - Code [grpo.py](./cs336_alignment/grpo.py)
-
+- Computing GRPO Microbatch Train Step:
+    - Code [grpo.py](./cs336_alignment/grpo.py)
 
 ## How to run
 
