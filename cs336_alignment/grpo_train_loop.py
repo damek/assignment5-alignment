@@ -139,7 +139,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
     utils.mem("after HF policy load")
     # Do rollouts from VLLM model
-    rewards, responses = grpo.sample_rollouts(vllm_model, train_dataset_r1_zero_grpo_step, GROUP_SIZE, MAX_TOKENS_TRAIN, TEMPERATURE, TOP_P)
+    rewards, responses = grpo.sample_rollouts(vllm_model, train_dataset_r1_zero_grpo_step, GROUP_SIZE, r1_zero_reward_fn, MAX_TOKENS_TRAIN, TEMPERATURE, TOP_P)
     # Rollouts
     tokenize_samples = utils.tokenize_prompt_and_output([data["prompt"] for data in responses], [data["response"] for data in responses], tokenizer)
     input_ids = tokenize_samples["input_ids"].to(device_hf)

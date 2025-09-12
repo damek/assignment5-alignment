@@ -141,6 +141,7 @@ def sample_rollouts(
     vllm_model,
     dataset: list[dict],
     num_rollouts: int,
+    reward_fn,
     max_tokens = 1024,
     temperature = 1.0,
     top_p = 1.0,
@@ -149,6 +150,7 @@ def sample_rollouts(
     sampling_params.stop = ["</answer>"]
     sampling_params.include_stop_str_in_output = True
     rewards, responses = utils.evaluate_vllm(
+        reward_fn=reward_fn,
         vllm_model=vllm_model,
         dataset=dataset,
         eval_sampling_params=sampling_params,
