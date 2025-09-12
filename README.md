@@ -24,6 +24,8 @@
     - Results [expert_iteration.md](./cs336_alignment/outputs/expert_iteration.md)
 - Computing Group Normalized Rewards: 
     - Code [grpo.py](./cs336_alignment/grpo.py)
+- Computing Naive Policy Gradient Loss:
+    - Code [grpo.py](./cs336_alignment/grpo.py)
 
 ## How to run
 

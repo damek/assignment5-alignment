@@ -45,3 +45,10 @@ def compute_naive_policy_gradient_loss(
     ) -> torch.Tensor:
 
     return -raw_rewards_or_advantages * policy_log_probs
+
+def compute_grpo_clip_loss(
+    advantages: torch.Tensor,
+    policy_log_probs: torch.Tensor,
+    old_log_probs: torch.Tensor,
+    cliprange: float,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
