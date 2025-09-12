@@ -46,7 +46,7 @@ def compute_naive_policy_gradient_loss(
     ) -> torch.Tensor:
     print("raw_rewards_or_advantages.shape: ", raw_rewards_or_advantages.shape)
     print("policy_log_probs.shape: ", policy_log_probs.shape)
-    return -raw_rewards_or_advantages * policy_log_probs
+    return -(raw_rewards_or_advantages.unsqueeze(0) * policy_log_probs).squeeze(0)
 
 def compute_grpo_clip_loss(
     advantages: torch.Tensor,
