@@ -16,17 +16,18 @@ def compute_group_normalized_rewards(
         reward = reward_fn(r, repeated_ground_truths)
         rewards.append(reward)
 
-    rewards = torch.tensor(rewards)
+    raw_rewards = torch.tensor(rewards)
     if normalize_by_std:
-        rewards = (rewards - rewards.mean()) / (rewards.std() + advantage_eps)
+        advantages = (raw_rewards - raw_rewards.mean()) / (raw_rewards.std() + advantage_eps)
     else:
-        rewards = rewards - rewards.mean()
+        advantages = raw_rewards - raw_rewards.mean()
+
 
     metadata = {
-        "rewards_mean": rewards.mean(),
-        "rewards_std": rewards.std(),
-        "rewards_min": rewards.min(),
-        "rewards_max": rewards.max(),
+        "rewards_mean": raw_rewards.mean(),
+        "rewards_std": raw_rewards.std(),
+        "rewards_min": raw_rewards.min(),
+        "rewards_max": raw_rewards.max(),
     }        
 
-    return rewards, metadata
+    return advantages, raw_rewards, metadata
