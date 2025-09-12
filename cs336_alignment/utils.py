@@ -95,11 +95,22 @@ def count_histogram(rows):
         "format reward 0 and answer reward 0": 0,
     }
     for row in rows:
+        if row.get("metrics") is None:
+            break
         if row["metrics"]["format_reward"] == 1 and row["metrics"]["answer_reward"] == 1:
             histogram["correct with both format and answer reward 1"] += 1
         elif row["metrics"]["format_reward"] == 1 and row["metrics"]["answer_reward"] == 0:
             histogram["format reward 1 and answer reward 0"] += 1
         elif row["metrics"]["format_reward"] == 0 and row["metrics"]["answer_reward"] == 0:
+            histogram["format reward 0 and answer reward 0"] += 1
+    for row in rows: 
+        if row.get("format_reward") is None:
+            break
+        if row["format_reward"] == 1 and row["answer_reward"] == 1:
+            histogram["correct with both format and answer reward 1"] += 1
+        elif row["format_reward"] == 1 and row["answer_reward"] == 0:
+            histogram["format reward 1 and answer reward 0"] += 1
+        elif row["format_reward"] == 0 and row["answer_reward"] == 0:
             histogram["format reward 0 and answer reward 0"] += 1
     return histogram
 
