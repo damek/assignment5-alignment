@@ -177,6 +177,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             print("old_log_probs.shape: ", old_log_probs[batch_indices,:].shape)
             print("policy_log_probs.shape: ", policy_log_probs.shape)
             print("response_mask_batch.shape: ", response_mask_batch.shape)
+            print("input_ids_batch.shape: ", input_ids_batch.shape)
+            print("labels_batch.shape: ", labels_batch.shape)
             loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=CLIPRANGE)
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
