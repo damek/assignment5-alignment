@@ -44,4 +44,4 @@ def compute_naive_policy_gradient_loss(
     policy_log_probs: torch.Tensor,
     ) -> torch.Tensor:
 
-    return raw_rewards_or_advantages * policy_log_probs
+    return -raw_rewards_or_advantages * policy_log_probs
