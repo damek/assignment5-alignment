@@ -148,7 +148,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(r1_zero_reward_fn, responses, [data["answer"] for data in train_dataset_r1_zero_grpo_step], GROUP_SIZE, ADVANTAGE_EPS, USE_STD_NORMALIZATION)
     old_log_probs = torch.zeros_like(input_ids)
     with torch.no_grad():
-        for i in range(0, ROLLOUT_BATCH_SIZE // (train_batch_size // micro_train_batch_size)):
+        for i in range(0, 2):
             last_index = min((i+1) * micro_train_batch_size, ROLLOUT_BATCH_SIZE)
             batch_indices = torch.arange(i * micro_train_batch_size, last_index)
             input_ids_batch = input_ids[batch_indices, :]
