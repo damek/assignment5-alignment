@@ -126,8 +126,12 @@ def grpo_microbatch_train_step(
         old_log_probs=old_log_probs,
         cliprange=cliprange,
     )
+    if metadata is None:
+        metadata = {}
     loss = masked_mean(loss, response_mask)
     loss /= max(1, gradient_accumulation_steps)
     loss.backward()
+    if "loss" in metadata:
+        raise ValueError("Loss already in metadata")
     metadata["loss"] = loss
     return loss, metadata
