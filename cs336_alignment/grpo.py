@@ -14,6 +14,7 @@ def compute_group_normalized_rewards(
     rewards = []
     raw_rewards = []
     for resp, gt in zip(rollout_responses, repeated_ground_truths):
+        print("Reward, GT: ", resp, gt)
         reward = reward_fn(resp, gt)
         rewards.append(reward)
         raw_rewards.append(reward["reward"])
