@@ -193,7 +193,11 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None)
             utils.mem("After grpo microbatch train step")
 
+            ## log weights and gradient norms 
+            wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
+
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
+                wandb.log({"weights": model.parameters()})
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
