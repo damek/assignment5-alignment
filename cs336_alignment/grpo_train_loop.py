@@ -205,8 +205,17 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
                 # weights norm
+                with torch.no_grad():
+                    weight_norm_before_step = 0
+                    for param in model.parameters():
+                        weight_norm_before_step += param.norm()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 optimizer.step()
+                with torch.no_grad():
+                    weight_norm_after_step = 0
+                    for param in model.parameters():
+                        weight_norm_after_step += param.norm()
+                wandb.log({"weight_norm_change": torch.linalg.norm(weight_norm_before_step - weight_norm_after_step)})
                 optimizer.zero_grad(set_to_none=True)
                 # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
                 utils.mem("after step")
