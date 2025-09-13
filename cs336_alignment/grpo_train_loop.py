@@ -188,6 +188,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             print("policy_log_probs.shape: ", policy_log_probs.shape)
             print("response_mask_batch.shape: ", response_mask_batch.shape)
             print("raw_rewards[batch_indices].shape: ", raw_rewards[batch_indices].shape)
+            print("advantages.shape: ", advantages.shape)
             print("advantages[batch_indices].shape: ", advantages[batch_indices].shape)
             print("old_log_probs[batch_indices,:].shape: ", old_log_probs[batch_indices,:].shape)
             print("batch_indices.shape: ", batch_indices.shape)
