@@ -19,9 +19,7 @@ def compute_group_normalized_rewards(
         reward = reward_fn(resp, gt)
         rewards.append(reward)
         raw_rewards.append(reward["reward"])
-        print("reward in loop: ", reward)
         
-    print("raw_rewards: ", raw_rewards)
     raw_rewards = torch.tensor(raw_rewards)
     advantages = torch.zeros_like(raw_rewards)
     for i in range(0, len(raw_rewards), group_size):
