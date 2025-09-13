@@ -198,7 +198,9 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 grad_norm = 0
                 for param in model.parameters():
                     grad_norm += param.grad.norm()
-            wandb.log({"gradient_norms": grad_norm})
+            # wandb.log({"gradient_norms": grad_norm})
+            # log the rewards and the norm of the advantages
+            wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm})
             # wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
