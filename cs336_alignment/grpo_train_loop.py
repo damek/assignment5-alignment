@@ -194,10 +194,15 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             utils.mem("After grpo microbatch train step")
 
             ## log weights and gradient norms 
-            wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
+            with torch.no_grad():
+                grad_norm = 0
+                for param in model.parameters():
+                    grad_norm += param.grad.norm()
+            wandb.log({"gradient_norms": grad_norm})
+            # wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
-                wandb.log({"weights": model.parameters()})
+                # weights norm
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
