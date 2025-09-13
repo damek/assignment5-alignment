@@ -62,7 +62,7 @@ TRAIN_BATCH_SIZE: int = args.train_batch_size # On-policy
 GRADIENT_ACCUMULATION_STEPS: int = args.gradient_accumulation_steps # microbatch size is 2, will fit on H100
 TEMPERATURE: float = 1
 TOP_P: float = 1
-GPU_MEMORY_UTILIZATION: float = 0.85
+GPU_MEMORY_UTILIZATION: float = 0.75
 LOSS_TYPE = "reinforce_with_baseline"
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 
