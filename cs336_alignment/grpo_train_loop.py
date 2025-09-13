@@ -153,6 +153,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     print("advantages.shape: ", advantages.shape)
     print("raw_rewards.shape: ", raw_rewards.shape)
     print("raw_rewards: ", raw_rewards)
+    print("rewards: ", rewards)
     # move to device
     advantages = advantages.to(device_hf)
     raw_rewards = raw_rewards.to(device_hf)
