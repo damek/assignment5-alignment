@@ -32,6 +32,11 @@
     - Code [grpo.py](./cs336_alignment/grpo.py)
 - Computing GRPO Microbatch Train Step:
     - Code [grpo.py](./cs336_alignment/grpo.py)
+- GRPO train loop:
+    - Code [grpo_train_loop.py](./cs336_alignment/grpo_train_loop.py)
+    - Results for Reinforce with baseline [grpo_train_loop.md](./cs336_alignment/outputs/grpo_train_loop.md)
+        - LOGS for Reinforce with baseline [grpo_train_loop_log.txt](./cs336_alignment/outputs/grpo_train_loop_log.txt)
+
 
 ## How to run
 
