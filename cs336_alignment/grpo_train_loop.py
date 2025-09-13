@@ -199,19 +199,19 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 optimizer.zero_grad(set_to_none=True)
                 # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
                 utils.mem("after step")
-    
-    with torch.no_grad():
-        print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating...")
-        vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
-        log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=ROLLOUT_BATCH_SIZE, max_tokens=MAX_TOKENS_EVAL)
-        wandb.log(log_generations_dict) # index x by epoch
-        histogram = utils.count_histogram(log_generations_dict["examples"])
-        print("histogram: ", histogram)
-        val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
-        print("Percentage of correct examples: ", val_accuracy)
-        wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "grpo_iteration": grpo_iteration}) # make the x axis of plot epoch
+    if grpo_iteration % 5 == 0:
+        with torch.no_grad():
+            print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating...")
+            vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
+            log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=ROLLOUT_BATCH_SIZE, max_tokens=MAX_TOKENS_EVAL)
+            wandb.log(log_generations_dict) # index x by epoch
+            histogram = utils.count_histogram(log_generations_dict["examples"])
+            print("histogram: ", histogram)
+            val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
+            print("Percentage of correct examples: ", val_accuracy)
+            wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "grpo_iteration": grpo_iteration}) # make the x axis of plot epoch
 
 
-        utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
-        utils.print_format_reward_0(log_generations_dict["examples"], 3)
-        utils.print_format_reward_1_answer_reward_0(log_generations_dict["examples"], 3)
+            utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
+            utils.print_format_reward_0(log_generations_dict["examples"], 3)
+            utils.print_format_reward_1_answer_reward_0(log_generations_dict["examples"], 3)
