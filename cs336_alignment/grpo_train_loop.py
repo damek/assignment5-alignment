@@ -79,7 +79,9 @@ assert TRAIN_BATCH_SIZE >= GROUP_SIZE, (
 "train_batch_size must be greater than or equal to group_size"
 )
 n_microbatches_per_rollout_batch = ROLLOUT_BATCH_SIZE // micro_train_batch_size
-
+assert ROLLOUT_BATCH_SIZE % micro_train_batch_size == 0, (
+"rollout_batch_size must be divisible by micro_train_batch_size"
+)
 # set wandb experiment name to include num_grpo_steps, advantage_eps, rollout_batch_size, group_size, epochs_per_rollout_batch, train_batch_size, gradient_accumulation_steps, loss_type, use_std_normalization
 wandb.init(project=WANDB_PROJECT, name=f"num_grpo_steps_{NUM_GRPO_ITERATIONS}_advantage_eps_{ADVANTAGE_EPS}_rollout_batch_size_{ROLLOUT_BATCH_SIZE}_group_size_{GROUP_SIZE}_epochs_per_rollout_batch_{EPOCHS_PER_ROLLOUT_BATCH}_train_batch_size_{TRAIN_BATCH_SIZE}_gradient_accumulation_steps_{GRADIENT_ACCUMULATION_STEPS}_loss_type_{LOSS_TYPE}_use_std_normalization_{USE_STD_NORMALIZATION}")
 # wandb.init(mode="disabled")
@@ -175,8 +177,9 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
         # Could shuffle here.
         for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
             print("GRPO Iteration: ", grpo_iteration, "Epoch: ", epoch, "Microbatch: ", i, "/", TRAIN_BATCH_SIZE // micro_train_batch_size)
-            last_index = min((i+1) * micro_train_batch_size, TRAIN_BATCH_SIZE)
-            batch_indices = torch.arange(i * micro_train_batch_size, last_index)
+            start = (i*micro_train_batch_size) 
+            end = (start + micro_train_batch_size)
+            batch_indices = torch.arange(start, end) % ROLLOUT_BATCH_SIZE
             input_ids_batch = input_ids[batch_indices, :]
             labels_batch = labels[batch_indices, :]
             response_mask_batch = response_mask[batch_indices, :]
