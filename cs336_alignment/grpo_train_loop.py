@@ -27,7 +27,6 @@ def get_args():
     parser.add_argument("--gradient_accumulation_steps", type=int, default=128)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--epochs_per_rollout_batch", type=int, default=1)
-    parser.add_argument("--num_sft_examples", type=int, default=None)
     parser.add_argument("--rollout_batch_size", type=int, default=256)
     parser.add_argument("--num_grpo_iterations", type=int, default=5)
     parser.add_argument("--group_size", type=int, default=8)
