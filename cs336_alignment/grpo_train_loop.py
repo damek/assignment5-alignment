@@ -154,6 +154,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     print("labels.shape: ", labels.shape)
     print("response_mask.shape: ", response_mask.shape)
     advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(r1_zero_reward_fn, prompt_response_answer_flattened, [data["answer"] for data in train_dataset_r1_zero_grpo_step], GROUP_SIZE, ADVANTAGE_EPS, USE_STD_NORMALIZATION)
+    print("advantages.shape: ", advantages.shape)
+    print("raw_rewards.shape: ", raw_rewards.shape)
     # move to device
     advantages = advantages.to(device_hf)
     raw_rewards = raw_rewards.to(device_hf)
@@ -161,7 +163,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     with torch.no_grad():
         for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
             last_index = min((i+1) * micro_train_batch_size, TRAIN_BATCH_SIZE)
-            batch_indices = torch.arange(i * 2, last_index)
+            batch_indices = torch.arange(i * micro_train_batch_size, last_index)
             input_ids_batch = input_ids[batch_indices, :]
             labels_batch = labels[batch_indices, :]
             response_mask_batch = response_mask[batch_indices, :]
@@ -183,7 +185,6 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             labels_batch = labels[batch_indices, :]
             response_mask_batch = response_mask[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
-            normalize_constant = response_mask_batch.sum().item()
             loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None)
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
