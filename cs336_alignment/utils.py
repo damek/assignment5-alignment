@@ -229,13 +229,13 @@ def get_response_log_probs(
     return_token_entropy,
     ) -> dict[str, torch.Tensor]:
 
-    mem(f"tokenized (B={input_ids.size(0)}, T={input_ids.size(1)})")
+    # mem(f"tokenized (B={input_ids.size(0)}, T={input_ids.size(1)})")
     logits = model(input_ids).logits
-    mem("after forward")
+    # mem("after forward")
 
     logZ = logits.logsumexp(dim=-1)
     log_probs = logits.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)  - logZ
-    mem("after logprob gather")
+    # mem("after logprob gather")
     if return_token_entropy:
         entropy = compute_entropy(logits)
         return {"log_probs": log_probs, "token_entropy": entropy}
