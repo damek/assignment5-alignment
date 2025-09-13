@@ -182,13 +182,6 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             labels_batch = labels[batch_indices, :]
             response_mask_batch = response_mask[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
-            # print("policy_log_probs.shape: ", policy_log_probs.shape)
-            # print("response_mask_batch.shape: ", response_mask_batch.shape)
-            # print("raw_rewards[batch_indices].shape: ", raw_rewards[batch_indices].shape)
-            # print("advantages.shape: ", advantages.shape)
-            # print("advantages[batch_indices].shape: ", advantages[batch_indices].shape)
-            # print("old_log_probs[batch_indices,:].shape: ", old_log_probs[batch_indices,:].shape)
-            # print("batch_indices.shape: ", batch_indices.shape)
             utils.mem("Before grpo microbatch train step")
             loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None)
             utils.mem("After grpo microbatch train step")
