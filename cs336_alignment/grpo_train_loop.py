@@ -25,7 +25,7 @@ def get_args():
     parser.add_argument("--output_path", type=str, default="outputs/sft_experiment.jsonl")
     parser.add_argument("--train_batch_size", type=int, default=256)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=128)
-    parser.add_argument("--lr", type=float, default=1e-5)
+    parser.add_argument("--lr", type=float, default=1e-6)
     parser.add_argument("--epochs_per_rollout_batch", type=int, default=1)
     parser.add_argument("--rollout_batch_size", type=int, default=256)
     parser.add_argument("--num_grpo_iterations", type=int, default=200)
@@ -81,8 +81,8 @@ assert TRAIN_BATCH_SIZE >= GROUP_SIZE, (
 n_microbatches_per_rollout_batch = ROLLOUT_BATCH_SIZE // micro_train_batch_size
 
 # set wandb experiment name to include num_grpo_steps, advantage_eps, rollout_batch_size, group_size, epochs_per_rollout_batch, train_batch_size, gradient_accumulation_steps, loss_type, use_std_normalization
-# wandb.init(project=WANDB_PROJECT, name=f"num_grpo_steps_{NUM_GRPO_ITERATIONS}_advantage_eps_{ADVANTAGE_EPS}_rollout_batch_size_{ROLLOUT_BATCH_SIZE}_group_size_{GROUP_SIZE}_epochs_per_rollout_batch_{EPOCHS_PER_ROLLOUT_BATCH}_train_batch_size_{TRAIN_BATCH_SIZE}_gradient_accumulation_steps_{GRADIENT_ACCUMULATION_STEPS}_loss_type_{LOSS_TYPE}_use_std_normalization_{USE_STD_NORMALIZATION}")
-wandb.init(mode="disabled")
+wandb.init(project=WANDB_PROJECT, name=f"num_grpo_steps_{NUM_GRPO_ITERATIONS}_advantage_eps_{ADVANTAGE_EPS}_rollout_batch_size_{ROLLOUT_BATCH_SIZE}_group_size_{GROUP_SIZE}_epochs_per_rollout_batch_{EPOCHS_PER_ROLLOUT_BATCH}_train_batch_size_{TRAIN_BATCH_SIZE}_gradient_accumulation_steps_{GRADIENT_ACCUMULATION_STEPS}_loss_type_{LOSS_TYPE}_use_std_normalization_{USE_STD_NORMALIZATION}")
+# wandb.init(mode="disabled")
 
 # Setup wandb metrics
 wandb.define_metric("train_step") # the x‑axis for training
