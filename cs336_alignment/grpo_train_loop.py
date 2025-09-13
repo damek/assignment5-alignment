@@ -189,10 +189,10 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             # print("advantages[batch_indices].shape: ", advantages[batch_indices].shape)
             # print("old_log_probs[batch_indices,:].shape: ", old_log_probs[batch_indices,:].shape)
             # print("batch_indices.shape: ", batch_indices.shape)
-            mem("Before grpo microbatch train step")
+            utils.mem("Before grpo microbatch train step")
             loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None)
-            mem("After grpo microbatch train step")
-            
+            utils.mem("After grpo microbatch train step")
+
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 optimizer.step()
