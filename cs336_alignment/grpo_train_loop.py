@@ -149,7 +149,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     labels = tokenize_samples["labels"].to(device_hf)
     response_mask = tokenize_samples["response_mask"].to(device_hf)
 
-    advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(r1_zero_reward_fn, prompt_response_answer_flattened, [data["answer"] for data in prompt_response_answer_flattened], GROUP_SIZE, ADVANTAGE_EPS, USE_STD_NORMALIZATION)
+    advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(r1_zero_reward_fn, [data["response"] for data in prompt_response_answer_flattened], [data["answer"] for data in prompt_response_answer_flattened], GROUP_SIZE, ADVANTAGE_EPS, USE_STD_NORMALIZATION)
     print("advantages.shape: ", advantages.shape)
     print("raw_rewards.shape: ", raw_rewards.shape)
     print("raw_rewards: ", raw_rewards)
