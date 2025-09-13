@@ -147,6 +147,7 @@ def sample_rollouts(
     sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
     sampling_params.stop = ["</answer>"]
     sampling_params.include_stop_str_in_output = True
+    sampling_params.min_tokens = 4
     rewards, responses = utils.evaluate_vllm(
         reward_fn=reward_fn,
         vllm_model=vllm_model,
