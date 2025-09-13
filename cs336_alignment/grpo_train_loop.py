@@ -142,6 +142,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     utils.mem("after HF policy load")
     # Do rollouts from VLLM model
     rewards, prompt_response_answer_flattened  = grpo.sample_rollouts(vllm_model, train_dataset_r1_zero_grpo_step, GROUP_SIZE, r1_zero_reward_fn, MAX_TOKENS_TRAIN, TEMPERATURE, TOP_P)
+    print("reward.shape: ", rewards.shape)
+    print("prompt_response_answer_flattened.shape: ", len(prompt_response_answer_flattened))
     # Rollouts
     tokenize_samples = utils.tokenize_prompt_and_output([data["prompt"] for data in prompt_response_answer_flattened], [data["response"] for data in prompt_response_answer_flattened], tokenizer)
     input_ids = tokenize_samples["input_ids"].to(device_hf)
