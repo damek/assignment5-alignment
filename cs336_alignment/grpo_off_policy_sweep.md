@@ -29,7 +29,7 @@ I've tried in this order:
 **Parallel batch 2:**
 We're going to try to stick to the same budget per grpo_iteration as in the original experiments (256 gradients touched in total). I also changed the logging frequency to once every 1024 samples, instead of 256. 
 
-Also, i realized that I was not using the GRPO clip loss for the off-policy experiments, so the previous ones may be useless. Using clip loss now for the first experiment below, not the second.
+Also, I realized that I was not using the GRPO clip loss for the off-policy experiments, so the previous ones may be useless. Using clip loss now on (eps = $.2$) the first experiment below, not the second.
 - (2, 128): 
     - Hypothesis: Perhaps we should split the batch smaller over multiple epochs? 
 - (1, 256): 
