@@ -23,5 +23,10 @@ too small and too large epochs/train_batch_size and do some bisection (because I
 I've tried in this order:
 (epoch, train_batch_size)
 Parallel batch 1: 
-- (1, 1024)
-- (5, 256)
+- (1, 1024): too slow
+- (5, 256): crashed out
+Parallel batch 2: We're going to try to stick to the same budget per grpo_iteration as in the original experiments (256 gradients touched in total).
+- (2, 128): 
+    - Hypothesis: Perhaps we should split the batch smaller over multiple epochs?
+- (32, 8): 
+    - Hypothesis: This is perhaps the most extreme.
