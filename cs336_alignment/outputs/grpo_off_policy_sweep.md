@@ -50,3 +50,5 @@ So at this point I concluded that there must be an error in my code.
 Conclusions: 
 - There was an issue with how the old log probs were computed and indexed in [grpo_train_loop.py](../grpo_train_loop.py). I fixed that. That resulted in more stable training. 
 - Large LR is still causing somewhat of an issue. I think i'm going to divide it by epochs_per_rollout_batch.
+
+Running a few more tests with (2, 256) and (2, 128) and lr 1e-5 to see if we get progress and don't blow up.
