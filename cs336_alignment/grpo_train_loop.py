@@ -139,7 +139,6 @@ weight_decay=0.0,
 betas=(0.9, 0.95),
 )
 
-
 # check the eval:    
 # So annoying thing here is that we need to retokenizer our dataset every time we do an expert iteration.
 utils.mem_reset_peak()
@@ -191,7 +190,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
         # Could shuffle here.
         for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
             total_samples_processed += micro_train_batch_size
-            print("GRPO Iteration: ", grpo_iteration, "Epoch: ", epoch, "Microbatch: ", i, "/", TRAIN_BATCH_SIZE // micro_train_batch_size)
+            print("GRPO Iteration: ", grpo_iteration, "Epoch: ", epoch, "Microbatch: ", i, "/", TRAIN_BATCH_SIZE // micro_train_batch_size, "total_samples_processed: ", total_samples_processed)
             start = (i*micro_train_batch_size) 
             end = (start + micro_train_batch_size)
             batch_indices = torch.arange(start, end) % ROLLOUT_BATCH_SIZE
@@ -210,7 +209,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     grad_norm += param.grad.norm()
             # wandb.log({"gradient_norms": grad_norm})
             # log the rewards and the norm of the advantages
-            wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm})
+            wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm, "total_samples_processed": total_samples_processed})
             # wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
