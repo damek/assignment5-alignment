@@ -229,7 +229,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 utils.mem("after step")
             if total_samples_processed % (5 * 256) == 0:
                 with torch.no_grad():
-                    print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating...")
+                    print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating... Total samples processed: {total_samples_processed}")
                     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
                     log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=ROLLOUT_BATCH_SIZE, max_tokens=MAX_TOKENS_EVAL)
                     wandb.log(log_generations_dict) # index x by epoch
@@ -240,6 +240,6 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "grpo_iteration": grpo_iteration, "total_samples_processed": total_samples_processed}) # make the x axis of plot epoch
 
 
-            utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
-            utils.print_format_reward_0(log_generations_dict["examples"], 3)
-            utils.print_format_reward_1_answer_reward_0(log_generations_dict["examples"], 3)
+                utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
+                utils.print_format_reward_0(log_generations_dict["examples"], 3)
+                utils.print_format_reward_1_answer_reward_0(log_generations_dict["examples"], 3)
