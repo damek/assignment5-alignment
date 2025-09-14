@@ -148,28 +148,48 @@ utils.mem("EI step start (before rollouts)")
 total_samples_processed = 0
 # from now on, we're going print every time we process 256 samples.
 for grpo_iteration in range(NUM_GRPO_ITERATIONS):
-    # first thing to do is sample TRAIN_BATCH_SIZE examples from the train dataset    
+    # first thing to do is sample n_prompts_per_rollout_batch examples from the train dataset    
     sample = torch.randperm(len(train_dataset))[:n_prompts_per_rollout_batch]
     train_dataset_r1_zero_grpo_step = [train_dataset_r1_zero[i] for i in sample]
     # Load model into vllm
     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
     utils.mem("after HF policy load")
     # Do rollouts from VLLM model
-    rewards, prompt_response_answer_flattened  = grpo.sample_rollouts(vllm_model, train_dataset_r1_zero_grpo_step, GROUP_SIZE, r1_zero_reward_fn, MAX_TOKENS_TRAIN, TEMPERATURE, TOP_P)
+    rewards, prompt_response_answer_flattened  = grpo.sample_rollouts(
+        vllm_model=vllm_model, 
+        dataset=train_dataset_r1_zero_grpo_step, 
+        group_size=GROUP_SIZE, 
+        reward_fn=r1_zero_reward_fn, 
+        max_tokens=MAX_TOKENS_TRAIN, 
+        temperature=TEMPERATURE, 
+        top_p=TOP_P)
 
     # Rollouts
-    tokenize_samples = utils.tokenize_prompt_and_output([data["prompt"] for data in prompt_response_answer_flattened], [data["response"] for data in prompt_response_answer_flattened], tokenizer)
+    tokenize_samples = utils.tokenize_prompt_and_output(
+        prompts=[data["prompt"] for data in prompt_response_answer_flattened], 
+        responses=[data["response"] for data in prompt_response_answer_flattened], 
+        tokenizer=tokenizer
+        )
+
     input_ids = tokenize_samples["input_ids"].to(device_hf)
     labels = tokenize_samples["labels"].to(device_hf)
     response_mask = tokenize_samples["response_mask"].to(device_hf)
 
-    advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(r1_zero_reward_fn, [data["response"] for data in prompt_response_answer_flattened], [data["answer"] for data in prompt_response_answer_flattened], GROUP_SIZE, ADVANTAGE_EPS, USE_STD_NORMALIZATION)
+    advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(
+        reward_fn=r1_zero_reward_fn, 
+        rollout_responses=[data["response"] for data in prompt_response_answer_flattened], 
+        repeated_ground_truths=[data["answer"] for data in prompt_response_answer_flattened], 
+        group_size=GROUP_SIZE, 
+        advantage_eps=ADVANTAGE_EPS, 
+        normalize_by_std=USE_STD_NORMALIZATION)
 
     # move to device
     advantages = advantages.to(device_hf)
     raw_rewards = raw_rewards.to(device_hf)
     old_log_probs = torch.empty(input_ids.shape, dtype=torch.float32).to(device_hf)
+
     if LOSS_TYPE == "grpo_clip":
+        print("Computing old log probs...")
         with torch.inference_mode():
             for i in range(0, ROLLOUT_BATCH_SIZE // micro_train_batch_size):
                 last_index = min((i+1) * micro_train_batch_size, ROLLOUT_BATCH_SIZE)
@@ -177,29 +197,37 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 input_ids_batch = input_ids[batch_indices, :]
                 labels_batch = labels[batch_indices, :]
                 response_mask_batch = response_mask[batch_indices, :]
-                old_log_probs[batch_indices, :] = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
+                old_log_probs[batch_indices, :] = utils.get_response_log_probs(
+                    model=model, 
+                    input_ids=input_ids_batch, 
+                    labels=labels_batch, 
+                    return_token_entropy=False
+                    )["log_probs"]
 
     histogram = utils.count_histogram(rewards)
     print("histogram: ", histogram)
     batch_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
     print("Percentage of correct examples: ", batch_accuracy)
-    wandb.log({"batch_accuracy": batch_accuracy, "grpo_iteration": grpo_iteration})
+    wandb.log(
+        {"batch_accuracy": batch_accuracy, 
+        "grpo_iteration": grpo_iteration}
+        )
 
     for epoch in range(EPOCHS_PER_ROLLOUT_BATCH):
 
         if epoch == 0: 
-            shuffle_rollout_batch_indices = torch.arange(ROLLOUT_BATCH_SIZE)
+            epoch_indices = torch.arange(ROLLOUT_BATCH_SIZE)
         else:   
-            shuffle_rollout_batch_indices = torch.randperm(ROLLOUT_BATCH_SIZE)
+            epoch_indices = torch.randperm(ROLLOUT_BATCH_SIZE)
 
-        input_ids_epoch = input_ids[shuffle_rollout_batch_indices, :]
-        labels_epoch = labels[shuffle_rollout_batch_indices, :]
-        response_mask_epoch = response_mask[shuffle_rollout_batch_indices, :]
-        advantages_epoch = advantages[shuffle_rollout_batch_indices]
-        raw_rewards_epoch = raw_rewards[shuffle_rollout_batch_indices]
-        old_log_probs_epoch = old_log_probs[shuffle_rollout_batch_indices, :]
+        input_ids_epoch = input_ids[epoch_indices, :]
+        labels_epoch = labels[epoch_indices, :]
+        response_mask_epoch = response_mask[epoch_indices, :]
+        advantages_epoch = advantages[epoch_indices]
+        raw_rewards_epoch = raw_rewards[epoch_indices]
+        old_log_probs_epoch = old_log_probs[epoch_indices, :]
 
-        for i in range(0, ROLLOUT_BATCH_SIZE // micro_train_batch_size):
+        for i in range(0, ROLLOUT_BATCH_SIZE, micro_train_batch_size):
             total_samples_processed += micro_train_batch_size
             print(
                 "GRPO Iteration: ", grpo_iteration, 
@@ -207,9 +235,9 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 "Microbatch: ", i, "/", ROLLOUT_BATCH_SIZE // micro_train_batch_size,
                 "total_samples_processed: ", total_samples_processed
                 )
-                
-            start = (i*micro_train_batch_size) 
-            end = (start + micro_train_batch_size)
+
+            start = i
+            end = min(start + micro_train_batch_size, ROLLOUT_BATCH_SIZE)
             batch_indices = torch.arange(start, end)
             # Compute input ids, labels, and response mask for the microbatch.
             policy_log_probs = utils.get_response_log_probs(

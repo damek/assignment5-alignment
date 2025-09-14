@@ -386,9 +386,9 @@ def make_expert_iteration_batch(
 
 
 
-def get_weight_norms(model):
+def get_weight_norm(model):
     with torch.no_grad():
-        weight_norms = []
+        weight_norm = 0
         for param in model.parameters():
-            weight_norms.append(param.norm())
-        return weight_norms
+            weight_norm += param.dot(param)
+        return torch.sqrt(weight_norm)
