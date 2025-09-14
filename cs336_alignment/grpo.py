@@ -151,13 +151,17 @@ def grpo_microbatch_train_step(
 def sample_rollouts(
     vllm_model,
     dataset: list[dict],
-    num_rollouts: int,
+    group_size: int,
     reward_fn,
     max_tokens = 1024,
     temperature = 1.0,
     top_p = 1.0,
 ) -> list[str]:
-    sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
+    sampling_params = SamplingParams(
+        n=group_size, 
+        temperature=temperature, 
+        top_p=top_p, 
+        max_tokens=max_tokens)
     sampling_params.stop = ["</answer>"]
     sampling_params.include_stop_str_in_output = True
     sampling_params.min_tokens = 4
