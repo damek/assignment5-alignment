@@ -44,7 +44,7 @@ and cons of each approach? Are there any specific settings or examples where one
 better?
 
 Masked normalize: 
-1. Gradients of rows with longer responses get larger norm and will affect the update more. Could encourage more verbose responses because of this. Would probably use when we want the model 'think' longer: e.g., if we want the model to generate a full proof rather than simply state the answer to a math problem.
+1. Think of the loss function. Example $i$ token $t$, has loss $L_{i,t}/M$, where M is the max length. When example $i$ contains relatively few tokens in the loss, the penalty is small because $M$ is large. On the other hand, when $i$ contains many tokens, the penalty is larger. Thus, we expect to be penalized more for longer generations. 
 
 Masked mean:
-2. Total gradient norm of each contribution is the same. But pertoken advantage is higher on shorter responses. Could potentially discourage really verbose responses, when a short one would do. Good if we want the model to simply output a scalar answer, rather than derive where the scalar came from
+2. Again think of the loss function. Here, we the loss is an average over the response length. Thus, we do not favor longer or shorter generations. Anything will do.
