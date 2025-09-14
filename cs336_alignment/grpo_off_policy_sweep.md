@@ -37,7 +37,7 @@ Also, I realized that I was not using the GRPO clip loss for the off-policy expe
     - Hypothesis: I needed a fair baseline for time, since I started logging the val accuracy more frequently.
         - Conclusion: Accidently ran with use_std_normalization = True. Got to ~80% accuracy quickly. Best run I've seen so far. Can't explain it.
 
-**Parallel Batch 3:**
+**Parallel Batch 3:** After the last run (1, 256), I'm turning standared deviation back on.
 - (2, 256): 
     - Hypothesis: Going to set the cliprange to .1, but reuse the samples from the rollout batch. In the (1, 256) setting, we're noever reusing samples. Not sure if that matters, but perhaps it does.
 
