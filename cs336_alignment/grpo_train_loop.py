@@ -40,7 +40,7 @@ def get_args():
     parser.add_argument("--max_tokens_eval", type=int, default=1024)
     # parser.add_argument("--loss_type", type=Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"], default="reinforce_with_baseline")
     parser.add_argument("--use_std_normalization", type=bool, default=True)
-    parser.add_argument("--no_length_normalization", action="store_true")
+    parser.add_argument("--use_length_normalization", type=bool, default=True)
     return parser.parse_args()
 
 args = get_args()
@@ -72,7 +72,7 @@ TOP_P: float = 1
 GPU_MEMORY_UTILIZATION: float = 0.75
 LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
-USE_LENGTH_NORMALIZATION: bool = not args.no_length_normalization
+USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 
 assert TRAIN_BATCH_SIZE % GRADIENT_ACCUMULATION_STEPS == 0, (
 "train_batch_size must be divisible by gradient_accumulation_steps"
