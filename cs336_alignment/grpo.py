@@ -3,6 +3,7 @@ import cs336_alignment.utils as utils
 from einops import einsum
 from typing import Literal
 from vllm import LLM, SamplingParams
+import utils
 
 def compute_group_normalized_rewards(
     reward_fn,
@@ -115,6 +116,7 @@ def grpo_microbatch_train_step(
     advantages: torch.Tensor | None = None,
     old_log_probs: torch.Tensor | None = None,
     cliprange: float | None = None,
+    use_length_normalization: bool = True,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 
     loss, metadata = compute_policy_gradient_loss(
@@ -127,7 +129,10 @@ def grpo_microbatch_train_step(
     )
     if metadata is None:
         metadata = {}
-    loss = masked_mean(loss, response_mask)
+    if use_length_normalization:
+        loss = masked_mean(loss, response_mask)
+    else:
+        loss = utils.masked_normalize(loss, response_mask, normalize_constant=response_mask.sum(dim=-1).max())
     loss /= max(1, gradient_accumulation_steps)
     loss.backward()
     if "loss" in metadata:

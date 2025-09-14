@@ -72,6 +72,7 @@ TOP_P: float = 1
 GPU_MEMORY_UTILIZATION: float = 0.75
 LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
+USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 
 assert TRAIN_BATCH_SIZE % GRADIENT_ACCUMULATION_STEPS == 0, (
 "train_batch_size must be divisible by gradient_accumulation_steps"
@@ -192,7 +193,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             response_mask_batch = response_mask[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
             utils.mem("Before grpo microbatch train step")
-            loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None)
+            loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None, use_length_normalization=USE_LENGTH_NORMALIZATION)
             utils.mem("After grpo microbatch train step")
 
             ## log weights and gradient norms 
