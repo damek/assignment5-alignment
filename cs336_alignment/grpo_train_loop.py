@@ -178,7 +178,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 labels_batch = labels[batch_indices, :]
                 response_mask_batch = response_mask[batch_indices, :]
                 old_log_probs[batch_indices, :] = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
-    
+
     histogram = utils.count_histogram(rewards)
     print("histogram: ", histogram)
     batch_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
@@ -209,7 +209,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     grad_norm += param.grad.norm()
             # wandb.log({"gradient_norms": grad_norm})
             # log the rewards and the norm of the advantages
-            wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm, "total_samples_processed": total_samples_processed})
+            wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm, "total_samples_processed": total_samples_processed, "advantages_mean": metadata["advantages_mean"], "advantages_std": metadata["advantages_std"], "advantages_min": metadata["advantages_min"], "advantages_max": metadata["advantages_max"]})
             if LOSS_TYPE == "grpo_clip":
                 wandb.log({"percentage_clipped": 1 - metadata["clipped_or_not"].float().mean()})
             # wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})

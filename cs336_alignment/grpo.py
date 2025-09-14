@@ -36,6 +36,10 @@ def compute_group_normalized_rewards(
         "rewards_min": raw_rewards.min(),
         "rewards_max": raw_rewards.max(),
         "fine_grained_rewards": rewards,
+        "advantages_mean": advantages.mean(),
+        "advantages_std": advantages.std(),
+        "advantages_min": advantages.min(),
+        "advantages_max": advantages.max(),
     }        
 
     return advantages, raw_rewards, metadata
