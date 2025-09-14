@@ -41,6 +41,7 @@ def get_args():
     # parser.add_argument("--loss_type", type=Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"], default="reinforce_with_baseline")
     parser.add_argument("--use_std_normalization", type=bool, default=True)
     parser.add_argument("--use_length_normalization", type=bool, default=True)
+    parser.add_argument("--cliprange", type=float, default=None)
     return parser.parse_args()
 
 args = get_args()
@@ -73,6 +74,7 @@ GPU_MEMORY_UTILIZATION: float = 0.75
 LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
+CLIPRANGE: float | None = args.cliprange
 
 assert TRAIN_BATCH_SIZE % GRADIENT_ACCUMULATION_STEPS == 0, (
 "train_batch_size must be divisible by gradient_accumulation_steps"
@@ -142,7 +144,7 @@ utils.mem_reset_peak()
 utils.mem("EI step start (before rollouts)")
 
 
-
+total_steps = 0
 for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     # first thing to do is sample TRAIN_BATCH_SIZE examples from the train dataset    
     sample = torch.randperm(len(train_dataset))[:n_prompts_per_rollout_batch]
@@ -166,7 +168,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     raw_rewards = raw_rewards.to(device_hf)
     old_log_probs = torch.empty(input_ids.shape, dtype=torch.float32).to(device_hf)
     if LOSS_TYPE == "grpo_clip":
-        with torch.no_grad():
+        with torch.inference_mode():
             for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
                 last_index = min((i+1) * micro_train_batch_size, TRAIN_BATCH_SIZE)
                 batch_indices = torch.arange(i * micro_train_batch_size, last_index)
@@ -182,6 +184,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     wandb.log({"batch_accuracy": batch_accuracy, "grpo_iteration": grpo_iteration})
 
     for epoch in range(EPOCHS_PER_ROLLOUT_BATCH):
+        total_steps += 1
         # Could shuffle here.
         for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
             print("GRPO Iteration: ", grpo_iteration, "Epoch: ", epoch, "Microbatch: ", i, "/", TRAIN_BATCH_SIZE // micro_train_batch_size)
@@ -193,7 +196,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             response_mask_batch = response_mask[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
             utils.mem("Before grpo microbatch train step")
-            loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=None, use_length_normalization=USE_LENGTH_NORMALIZATION, max_new_tokens=MAX_TOKENS_TRAIN)
+            loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=CLIPRANGE, use_length_normalization=USE_LENGTH_NORMALIZATION, max_new_tokens=MAX_TOKENS_TRAIN)
             utils.mem("After grpo microbatch train step")
 
             ## log weights and gradient norms 
@@ -222,7 +225,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 optimizer.zero_grad(set_to_none=True)
                 # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
                 utils.mem("after step")
-    if grpo_iteration % 5 == 0 or grpo_iteration == NUM_GRPO_ITERATIONS - 1:
+    if total_steps % 5 == 0 or grpo_iteration == NUM_GRPO_ITERATIONS - 1:
         with torch.no_grad():
             print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating...")
             vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
