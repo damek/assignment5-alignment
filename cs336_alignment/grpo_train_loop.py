@@ -75,6 +75,8 @@ LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 CLIPRANGE: float | None = args.cliprange
+if LOSS_TYPE == "grpo_clip":
+    assert CLIPRANGE is not None, "cliprange must be provided for grpo_clip loss, e.g., --cliprange 0.2."
 
 assert TRAIN_BATCH_SIZE % GRADIENT_ACCUMULATION_STEPS == 0, (
 "train_batch_size must be divisible by gradient_accumulation_steps"

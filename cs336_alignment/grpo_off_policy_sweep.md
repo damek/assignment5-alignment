@@ -22,11 +22,14 @@ too small and too large epochs/train_batch_size and do some bisection (because I
 
 I've tried in this order:
 (epoch, train_batch_size)
-Parallel batch 1: 
+**Parallel batch 1:**
 - (1, 1024): too slow
 - (5, 256): crashed out. I think 5 is too many per grpo_iteration.
-Parallel batch 2: 
-We're going to try to stick to the same budget per grpo_iteration as in the original experiments (256 gradients touched in total). I also changed the logging frequency to once every 1024 samples, instead of 256.
+
+**Parallel batch 2:**
+We're going to try to stick to the same budget per grpo_iteration as in the original experiments (256 gradients touched in total). I also changed the logging frequency to once every 1024 samples, instead of 256. 
+
+Also, i realized that I was not using the GRPO clip loss for the off-policy experiments, so the previous ones may be useless. Using clip loss now for the first experiment below, not the second.
 - (2, 128): 
     - Hypothesis: Perhaps we should split the batch smaller over multiple epochs? 
 - (1, 256): 
