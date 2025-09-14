@@ -144,7 +144,8 @@ utils.mem_reset_peak()
 utils.mem("EI step start (before rollouts)")
 
 
-total_steps = 0
+total_samples_processed = 0
+# from now on, we're going print every time we process 5*256 samples.
 for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     # first thing to do is sample TRAIN_BATCH_SIZE examples from the train dataset    
     sample = torch.randperm(len(train_dataset))[:n_prompts_per_rollout_batch]
@@ -184,9 +185,10 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     wandb.log({"batch_accuracy": batch_accuracy, "grpo_iteration": grpo_iteration})
 
     for epoch in range(EPOCHS_PER_ROLLOUT_BATCH):
-        total_steps += 1
+        
         # Could shuffle here.
         for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
+            total_samples_processed += micro_train_batch_size
             print("GRPO Iteration: ", grpo_iteration, "Epoch: ", epoch, "Microbatch: ", i, "/", TRAIN_BATCH_SIZE // micro_train_batch_size)
             start = (i*micro_train_batch_size) 
             end = (start + micro_train_batch_size)
@@ -225,17 +227,17 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 optimizer.zero_grad(set_to_none=True)
                 # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
                 utils.mem("after step")
-    if total_steps % 5 == 0 or grpo_iteration == NUM_GRPO_ITERATIONS - 1:
-        with torch.no_grad():
-            print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating...")
-            vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
-            log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=ROLLOUT_BATCH_SIZE, max_tokens=MAX_TOKENS_EVAL)
-            wandb.log(log_generations_dict) # index x by epoch
-            histogram = utils.count_histogram(log_generations_dict["examples"])
-            print("histogram: ", histogram)
-            val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
-            print("Percentage of correct examples: ", val_accuracy)
-            wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "grpo_iteration": grpo_iteration}) # make the x axis of plot epoch
+            if total_samples_processed % (5 * 256) == 0 or grpo_iteration == NUM_GRPO_ITERATIONS - 1:
+                with torch.no_grad():
+                    print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating...")
+                    vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
+                    log_generations_dict = utils.log_generations(vllm_model, model, tokenizer, eval_dataset_r1_zero, batch_size=ROLLOUT_BATCH_SIZE, max_tokens=MAX_TOKENS_EVAL)
+                    wandb.log(log_generations_dict) # index x by epoch
+                    histogram = utils.count_histogram(log_generations_dict["examples"])
+                    print("histogram: ", histogram)
+                    val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
+                    print("Percentage of correct examples: ", val_accuracy)
+                    wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "grpo_iteration": grpo_iteration}) # make the x axis of plot epoch
 
 
             utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
