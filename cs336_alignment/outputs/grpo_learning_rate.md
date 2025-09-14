@@ -6,7 +6,7 @@ Deliverable: A model that achieves validation accuracy of at least 25% on MATH.
 Deliverable: A brief 2 sentence discussion on any other trends you notice on other logged metrics.
 
 ```bash
-uv run grpo_learning_rate.sh
+uv run grpo_learning_rate.sh --lr 1.5e-5
 ```
 
 ![](figures/grpo_learning_rate.png)
