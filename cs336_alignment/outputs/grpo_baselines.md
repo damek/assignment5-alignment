@@ -5,11 +5,8 @@ Deliverable: Validation reward curves associated with each loss type.
 Deliverable: A brief 2 sentence discussion on any other trends you notice on other logged metrics.
 
 ```bash
-uv run grpo_train_loop.py --loss_type no_baseline
+uv run grpo_train_loop.py --loss_type no_baseline --lr 1.5e-5
 ```
 
 ![](figures/grpo_baselines.png)
 
-You can see the rollouts in the [log file](./grpo_baselines_log.txt)
-
-Read about my reasoning on twitter [here](https://x.com/damekdavis/status/1967007561007210699)
