@@ -40,6 +40,10 @@
     - Results [grpo_learning_rate.md](./cs336_alignment/outputs/grpo_learning_rate.md)
 - GRPO baselines: compare baselinen to no baselining
     - Results [grpo_baselines.md](./cs336_alignment/outputs/grpo_baselines.md)
+- Think about length normalization: compare masked_mean and masked_normalize
+    - Results [think_about_length_normalization.md](./cs336_alignment/outputs/think_about_length_normalization.md)
+- GRPO length normalization: compare masked_mean and masked_normalize
+    - Results [grpo_length_normalization.md](./cs336_alignment/outputs/grpo_length_normalization.md)
 
 ## How to run
 
