@@ -145,7 +145,7 @@ utils.mem("EI step start (before rollouts)")
 
 
 total_samples_processed = 0
-# from now on, we're going print every time we process 5*256 samples.
+# from now on, we're going print every time we process 256 samples.
 for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     # first thing to do is sample TRAIN_BATCH_SIZE examples from the train dataset    
     sample = torch.randperm(len(train_dataset))[:n_prompts_per_rollout_batch]
@@ -227,7 +227,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 optimizer.zero_grad(set_to_none=True)
                 # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
                 utils.mem("after step")
-            if total_samples_processed % (5 * 256) == 0:
+            if total_samples_processed % (256) == 0:
                 with torch.no_grad():
                     print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating... Total samples processed: {total_samples_processed}")
                     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
