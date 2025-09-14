@@ -36,7 +36,8 @@
     - Code [grpo_train_loop.py](./cs336_alignment/grpo_train_loop.py)
     - Results for Reinforce with baseline [grpo_train_loop.md](./cs336_alignment/outputs/grpo_train_loop.md)
         - LOGS for Reinforce with baseline [grpo_train_loop_log.txt](./cs336_alignment/outputs/grpo_train_loop_log.txt)
-
+- GRPO learning rate:
+    - Results [grpo_learning_rate.md](./cs336_alignment/outputs/grpo_learning_rate.md)
 
 ## How to run
 

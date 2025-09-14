@@ -214,7 +214,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 optimizer.zero_grad(set_to_none=True)
                 # gc.collect(); torch.cuda.empty_cache() # You can include this but it slows everything down a bit.
                 utils.mem("after step")
-    if grpo_iteration % 5 == 0:
+    if grpo_iteration % 5 == 0 or grpo_iteration == NUM_GRPO_ITERATIONS - 1:
         with torch.no_grad():
             print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating...")
             vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
