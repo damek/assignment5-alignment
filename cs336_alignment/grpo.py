@@ -130,11 +130,11 @@ def grpo_microbatch_train_step(
     if metadata is None:
         metadata = {}
     if use_length_normalization:
-        loss = masked_mean(loss, response_mask)
+        loss = masked_mean(loss, response_mask, dim=1)
     else:
-        loss = utils.masked_normalize(loss, response_mask, normalize_constant=response_mask.sum(dim=-1).max())
+        loss = utils.masked_normalize(loss, response_mask, normalize_constant=response_mask.sum(dim=-1).max(), dim=1)
     loss /= max(1, gradient_accumulation_steps)
-    loss.backward()
+    loss.mean().backward()
     if "loss" in metadata:
         raise ValueError("Loss already in metadata")
     metadata["loss"] = loss
