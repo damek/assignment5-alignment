@@ -184,3 +184,5 @@ def sample_rollouts(
             )    # flatten responses out so we can just return the list 
     # the structure is a response has num_rollouts outputs, each with a text field)
     return reward_flattened, prompt_response_answer_flattened
+
+

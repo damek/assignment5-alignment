@@ -282,69 +282,70 @@ def log_generations(
     top_p=1.0,
     log_token_entropy=False,
 ):
-    if batch_size is None:
-        batch_size = len(dataset)
-    # Create prompts from dataset
-    prompts = [data["prompt"] for data in dataset]
-    gt_answers = [data["answer"] for data in dataset]
+    with torch.inference_mode():
+        if batch_size is None:
+            batch_size = len(dataset)
+        # Create prompts from dataset
+        prompts = [data["prompt"] for data in dataset]
+        gt_answers = [data["answer"] for data in dataset]
 
-    # Sample generations from VLLM Model
-    eval_sampling_params = SamplingParams(temperature=temperature, top_p=top_p, max_tokens=max_tokens)
-    eval_sampling_params.stop = ["</answer>"]
-    eval_sampling_params.include_stop_str_in_output = True
-    rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, dataset, eval_sampling_params)
-    responses = [response.outputs[0].text for response in responses]
+        # Sample generations from VLLM Model
+        eval_sampling_params = SamplingParams(temperature=temperature, top_p=top_p, max_tokens=max_tokens)
+        eval_sampling_params.stop = ["</answer>"]
+        eval_sampling_params.include_stop_str_in_output = True
+        rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, dataset, eval_sampling_params)
+        responses = [response.outputs[0].text for response in responses]
 
-    # Tokenize prompt and output
-    tokenized_dict = tokenize_prompt_and_output(prompts, responses, tokenizer)
-    input_ids, labels, response_mask = tokenized_dict["input_ids"], tokenized_dict["labels"], tokenized_dict["response_mask"]
+        # Tokenize prompt and output
+        tokenized_dict = tokenize_prompt_and_output(prompts, responses, tokenizer)
+        input_ids, labels, response_mask = tokenized_dict["input_ids"], tokenized_dict["labels"], tokenized_dict["response_mask"]
 
-    # Compute token entropy
-    response_length = response_mask.sum(dim=-1)
-    avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
-    if log_token_entropy:
-        input_ids = input_ids.to(hf_model.device)
-        response_mask = response_mask.to(hf_model.device)
-        for i in range(0, len(input_ids), batch_size):
-            print(f"Computing token entropy for batch {i}/{len(input_ids)}")
-            input_ids_batch = input_ids[i:i+batch_size, :]
-            response_mask_batch = response_mask[i:i+batch_size, :]
-            logits=hf_model(input_ids_batch).logits
-            token_entropy = compute_entropy(logits)
-            avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/response_length[i:i+batch_size]
-    else:
-        avg_entropy.fill_(float("nan"))
+        # Compute token entropy
+        response_length = response_mask.sum(dim=-1)
+        avg_entropy = torch.zeros(input_ids.shape[0], device=input_ids.device)
+        if log_token_entropy:
+            input_ids = input_ids.to(hf_model.device)
+            response_mask = response_mask.to(hf_model.device)
+            for i in range(0, len(input_ids), batch_size):
+                print(f"Computing token entropy for batch {i}/{len(input_ids)}")
+                input_ids_batch = input_ids[i:i+batch_size, :]
+                response_mask_batch = response_mask[i:i+batch_size, :]
+                logits=hf_model(input_ids_batch).logits
+                token_entropy = compute_entropy(logits)
+                avg_entropy[i:i+batch_size] = ((token_entropy*response_mask_batch)).sum(dim=-1)/response_length[i:i+batch_size]
+        else:
+            avg_entropy.fill_(float("nan"))
 
-    # Compute response length
-    # response_length = (response_length / response_length).tolist()
-    # Compute which samples are correct
-    is_correct = [int(r[0]["reward"] == 1) for r in rewards]
-    L = torch.tensor(response_length, dtype=torch.float32)
-    C = torch.tensor(is_correct)
-    # compute stats
-    avg_len = L.mean().item()
-    correct_response_length = (L[C]).mean().item() if C.any() else float("nan")
-    incorrect_response_length = (L[~C]).mean().item() if (~C).any() else float("nan")
+        # Compute response length
+        # response_length = (response_length / response_length).tolist()
+        # Compute which samples are correct
+        is_correct = [int(r[0]["reward"] == 1) for r in rewards]
+        L = torch.tensor(response_length, dtype=torch.float32)
+        C = torch.tensor(is_correct)
+        # compute stats
+        avg_len = L.mean().item()
+        correct_response_length = (L[C]).mean().item() if C.any() else float("nan")
+        incorrect_response_length = (L[~C]).mean().item() if (~C).any() else float("nan")
 
-    # Create output dictionary
-    out = []
-    for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy, response_length):
-        out.append({
-            "question": p,
-            "generation": rtxt,
-            "gt_answer": gt,
-            "metrics": rew[0],  
-            "avg_token_entropy": float(ent),
-            "response_length": float(ln),
-        })
-    return {
-        "examples": out,
-        "averages": {
-            "avg_response_length": float(avg_len),
-            "avg_response_length_correct": float(correct_response_length),
-            "avg_response_length_incorrect": float(incorrect_response_length),
-        },
-    }
+        # Create output dictionary
+        out = []
+        for p, rtxt, gt, rew, ent, ln in zip(prompts, responses, gt_answers, rewards, avg_entropy, response_length):
+            out.append({
+                "question": p,
+                "generation": rtxt,
+                "gt_answer": gt,
+                "metrics": rew[0],  
+                "avg_token_entropy": float(ent),
+                "response_length": float(ln),
+            })
+        return {
+            "examples": out,
+            "averages": {
+                "avg_response_length": float(avg_len),
+                "avg_response_length_correct": float(correct_response_length),
+                "avg_response_length_incorrect": float(incorrect_response_length),
+            },
+        }
 
 
 # Most of this file assumes we do 1 rollout. This function breaks from that. Thus, there could be some backwards compatibility issues.
@@ -383,3 +384,11 @@ def make_expert_iteration_batch(
     print("Total reward: ", total_reward)
     return out
 
+
+
+def get_weight_norms(model):
+    with torch.no_grad():
+        weight_norms = []
+        for param in model.parameters():
+            weight_norms.append(param.norm())
+        return weight_norms

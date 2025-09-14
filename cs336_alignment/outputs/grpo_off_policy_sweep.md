@@ -52,3 +52,5 @@ Conclusions:
 - Large LR is still causing somewhat of an issue. I think i'm going to divide it by epochs_per_rollout_batch.
 
 Running a few more tests with (2, 256) and (2, 128) and lr 1e-5 to see if we get progress and don't blow up.
+(2, 256) died. 
+Maybe I should simplify the loop logic regarding multiple rollouts.
