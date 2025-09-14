@@ -11,6 +11,4 @@ uv run grpo_learning_rate.sh
 
 ![](figures/grpo_learning_rate.png)
 
-You can see the rollouts in the [log file](./grpo_learning_rate_log.txt)
-
 Read about my reasoning on twitter [here](https://x.com/damekdavis/status/1967007561007210699)
