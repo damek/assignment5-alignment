@@ -28,5 +28,9 @@ Parallel batch 1:
 Parallel batch 2: We're going to try to stick to the same budget per grpo_iteration as in the original experiments (256 gradients touched in total).
 - (2, 128): 
     - Hypothesis: Perhaps we should split the batch smaller over multiple epochs?
-- (32, 8): 
-    - Hypothesis: This is perhaps the most extreme.
+- (1, 256): 
+    - Hypothesis: I needed a fair baseline for time, since I started logging the val accuracy more frequently.
+
+
+
+I'm going to run (1, 256) and (2, 128) for 50 grpo_iterations and then see how they do.
