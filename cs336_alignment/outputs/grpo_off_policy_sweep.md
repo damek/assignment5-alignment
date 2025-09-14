@@ -47,4 +47,6 @@ So at this point I concluded that there must be an error in my code.
 - I set cliprange to .2 because I think that should be fine (it's suggested in exercise.)
 - I divided the learning rate by the number of epochs_per_rollout_batch: 2. 
 
-Conclusion: large lr seems to be the issue. 
+Conclusions: 
+- There was an issue with how the old log probs were computed and indexed in [grpo_train_loop.py](../grpo_train_loop.py). I fixed that. That resulted in more stable training. 
+- Large LR is still causing somewhat of an issue. I think i'm going to divide it by epochs_per_rollout_batch.
