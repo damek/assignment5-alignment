@@ -40,4 +40,5 @@ Also, I realized that I was not using the GRPO clip loss for the off-policy expe
 **Parallel Batch 3:** After the last run (1, 256), I'm turning standared deviation back on.
 - (2, 256): 
     - Hypothesis: Going to set the cliprange to .1, but reuse the samples from the rollout batch. In the (1, 256) setting, we're noever reusing samples. Not sure if that matters, but perhaps it does.
+        - Conclusion: Gradient exploding. Need to split to explicit debugging. 
 
