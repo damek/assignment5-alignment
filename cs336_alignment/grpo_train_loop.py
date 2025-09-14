@@ -166,8 +166,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
 
     # Rollouts
     tokenize_samples = utils.tokenize_prompt_and_output(
-        prompts=[data["prompt"] for data in prompt_response_answer_flattened], 
-        responses=[data["response"] for data in prompt_response_answer_flattened], 
+        prompt_strs=[data["prompt"] for data in prompt_response_answer_flattened], 
+        output_strs=[data["response"] for data in prompt_response_answer_flattened], 
         tokenizer=tokenizer
         )
 
@@ -294,7 +294,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     )
                 optimizer.zero_grad(set_to_none=True)
                 utils.mem("after step")
-                
+
             if total_samples_processed % (1024) == 0:
                 print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating... Total samples processed: {total_samples_processed}")
                 
