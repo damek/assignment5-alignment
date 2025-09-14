@@ -69,7 +69,7 @@ GRADIENT_ACCUMULATION_STEPS: int = args.gradient_accumulation_steps # microbatch
 TEMPERATURE: float = 1
 TOP_P: float = 1
 GPU_MEMORY_UTILIZATION: float = 0.75
-LOSS_TYPE = "reinforce_with_baseline"
+LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 
 assert TRAIN_BATCH_SIZE % GRADIENT_ACCUMULATION_STEPS == 0, (
