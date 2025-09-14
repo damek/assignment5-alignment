@@ -294,6 +294,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     )
                 optimizer.zero_grad(set_to_none=True)
                 utils.mem("after step")
+                
             if total_samples_processed % (1024) == 0:
                 print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating... Total samples processed: {total_samples_processed}")
                 
