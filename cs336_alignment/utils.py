@@ -13,12 +13,13 @@ PROMPT_PATH = "prompts/r1_zero.prompt"
 # the way the gsm8k dataset is format, the final part of the answer has a ### at the end followed by GT. 
 # Thanks to gpt5 for writing this one.
 
-def mem(tag, device="cuda:1"):
-    torch.cuda.synchronize(device)
-    alloc = torch.cuda.memory_allocated(device) / 1e9
-    reserved = torch.cuda.memory_reserved(device) / 1e9
-    peak = torch.cuda.max_memory_allocated(device) / 1e9
-    print(f"[MEM {device}][{tag}] alloc={alloc:.2f} GB  reserved={reserved:.2f} GB  peak={peak:.2f} GB")
+def mem(tag, device="cuda:1", enabled=False):
+    if enabled:
+        torch.cuda.synchronize(device)
+        alloc = torch.cuda.memory_allocated(device) / 1e9
+        reserved = torch.cuda.memory_reserved(device) / 1e9
+        peak = torch.cuda.max_memory_allocated(device) / 1e9
+        print(f"[MEM {device}][{tag}] alloc={alloc:.2f} GB  reserved={reserved:.2f} GB  peak={peak:.2f} GB")
 
 def mem_reset_peak(device="cuda:1"):
     torch.cuda.reset_peak_memory_stats(device)
