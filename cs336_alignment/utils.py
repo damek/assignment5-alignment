@@ -388,7 +388,7 @@ def make_expert_iteration_batch(
 
 def get_weight_norm(model):
     with torch.no_grad():
-        weight_norm = 0
+        weight_norm = torch.tensor(0.0, device=model.device)
         for param in model.parameters():
-            weight_norm += param.dot(param)
+            weight_norm += param.norm(param)**2
         return torch.sqrt(weight_norm)
