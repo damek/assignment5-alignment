@@ -285,10 +285,10 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
 
             if total_samples_processed % (TRAIN_BATCH_SIZE) == 0:
                 # weights norm
-                weight_norm_before_step = utils.get_weight_norms(model)
+                weight_norm_before_step = utils.get_weight_norm(model)
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 optimizer.step()
-                weight_norm_after_step = utils.get_weight_norms(model)
+                weight_norm_after_step = utils.get_weight_norm(model)
                 wandb.log(
                     {"weight_norm_change": torch.linalg.norm(weight_norm_before_step - weight_norm_after_step)}
                     )
