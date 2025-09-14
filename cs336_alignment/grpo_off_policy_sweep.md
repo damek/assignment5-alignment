@@ -32,8 +32,12 @@ We're going to try to stick to the same budget per grpo_iteration as in the orig
 Also, I realized that I was not using the GRPO clip loss for the off-policy experiments, so the previous ones may be useless. Using clip loss now on (eps = $.2$) the first experiment below, not the second.
 - (2, 128): 
     - Hypothesis: Perhaps we should split the batch smaller over multiple epochs? 
+        - Conclusion: Clipped at .2. Gradients blew up. Perhaps we need a smaller stepsize, or a smaller cliprange.
 - (1, 256): 
     - Hypothesis: I needed a fair baseline for time, since I started logging the val accuracy more frequently.
+        - Conclusion: Accidently ran with use_std_normalization = True. Got to ~80% accuracy quickly. Best run I've seen so far. Can't explain it.
 
-
+**Parallel Batch 3:**
+- (2, 256): 
+    - Hypothesis: Going to set the cliprange to .1, but reuse the samples from the rollout batch. In the (1, 256) setting, we're noever reusing samples. Not sure if that matters, but perhaps it does.
 

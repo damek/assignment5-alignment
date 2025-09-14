@@ -199,7 +199,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             response_mask_batch = response_mask[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
             utils.mem("Before grpo microbatch train step")
-            loss, _ = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=CLIPRANGE, use_length_normalization=USE_LENGTH_NORMALIZATION, max_new_tokens=MAX_TOKENS_TRAIN)
+            loss, metadata = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=CLIPRANGE, use_length_normalization=USE_LENGTH_NORMALIZATION, max_new_tokens=MAX_TOKENS_TRAIN)
             utils.mem("After grpo microbatch train step")
 
             ## log weights and gradient norms 
@@ -209,7 +209,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     grad_norm += param.grad.norm()
             # wandb.log({"gradient_norms": grad_norm})
             # log the rewards and the norm of the advantages
-            wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm, "total_samples_processed": total_samples_processed})
+            wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm, "total_samples_processed": total_samples_processed, "percentage_clipped": metadata["clipped_or_not"].mean()})
             # wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
