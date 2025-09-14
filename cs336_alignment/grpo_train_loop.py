@@ -29,6 +29,12 @@ def get_args():
     parser.add_argument("--epochs_per_rollout_batch", type=int, default=1)
     parser.add_argument("--rollout_batch_size", type=int, default=256)
     parser.add_argument("--num_grpo_iterations", type=int, default=200)
+    parser.add_argument(
+        "--loss_type",
+        type=str,
+        choices=["no_baseline", "reinforce_with_baseline", "grpo_clip"],
+        default="reinforce_with_baseline",
+    )
     parser.add_argument("--group_size", type=int, default=8)
     parser.add_argument("--max_tokens_train", type=int, default=1024)
     parser.add_argument("--max_tokens_eval", type=int, default=1024)
