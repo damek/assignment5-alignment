@@ -211,7 +211,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             # log the rewards and the norm of the advantages
             wandb.log({"rewards": raw_rewards[batch_indices].mean(), "advantages": advantages[batch_indices].mean(), "gradient_norms": grad_norm, "total_samples_processed": total_samples_processed})
             if LOSS_TYPE == "grpo_clip":
-                wandb.log({"percentage_clipped": metadata["clipped_or_not"].float().mean()})
+                wandb.log({"percentage_clipped": 1 - metadata["clipped_or_not"].float().mean()})
             # wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
 
             if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
