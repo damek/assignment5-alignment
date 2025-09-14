@@ -47,4 +47,4 @@ So at this point I concluded that there must be an error in my code.
 - I set cliprange to .2 because I think that should be fine (it's suggested in exercise.)
 - I divided the learning rate by the number of epochs_per_rollout_batch: 2. 
 
-Conclusion: large lr seems to be the issue. When I divide the learning rate by the number of epochs, things are more stable, but I'm still seeing spikes. Will try to set it smaller.
+Conclusion: large lr seems to be the issue. 
