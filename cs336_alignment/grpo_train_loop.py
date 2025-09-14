@@ -186,18 +186,30 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     wandb.log({"batch_accuracy": batch_accuracy, "grpo_iteration": grpo_iteration})
 
     for epoch in range(EPOCHS_PER_ROLLOUT_BATCH):
-        
-        # Could shuffle here.
-        
-        for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
+
+        # an epoch is a pass over the entire rollout batch.
+        # So let's first shuffle the rollout batch.
+        if epoch == 0: # just use the same shuffle for the first epoch.
+            shuffle_rollout_batch_indices = torch.arange(ROLLOUT_BATCH_SIZE)
+        else:   
+            shuffle_rollout_batch_indices = torch.randperm(ROLLOUT_BATCH_SIZE)
+        # Next, we're going to go through the data in steps of micro_train_batch_size.
+        # Taking a step whenever we've gone through an entire train_batch, i.e., when total_samples_processed is a multiple of TRAIN_BATCH_SIZE.
+
+        # Let's now create the epoch input_ids, labels, and response_mask.
+        input_ids_epoch = input_ids[shuffle_rollout_batch_indices, :]
+        labels_epoch = labels[shuffle_rollout_batch_indices, :]
+        response_mask_epoch = response_mask[shuffle_rollout_batch_indices, :]
+
+        for i in range(0, ROLLOUT_BATCH_SIZE // micro_train_batch_size):
             total_samples_processed += micro_train_batch_size
             print("GRPO Iteration: ", grpo_iteration, "Epoch: ", epoch, "Microbatch: ", i, "/", TRAIN_BATCH_SIZE // micro_train_batch_size, "total_samples_processed: ", total_samples_processed)
             start = (i*micro_train_batch_size) 
             end = (start + micro_train_batch_size)
             batch_indices = torch.arange(start, end) % ROLLOUT_BATCH_SIZE
-            input_ids_batch = input_ids[batch_indices, :]
-            labels_batch = labels[batch_indices, :]
-            response_mask_batch = response_mask[batch_indices, :]
+            input_ids_batch = input_ids_epoch[batch_indices, :]
+            labels_batch = labels_epoch[batch_indices, :]
+            response_mask_batch = response_mask_epoch[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
             utils.mem("Before grpo microbatch train step")
             loss, metadata_train_step = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=CLIPRANGE, use_length_normalization=USE_LENGTH_NORMALIZATION, max_new_tokens=MAX_TOKENS_TRAIN)
@@ -215,7 +227,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 wandb.log({"percentage_clipped": 1 - metadata_train_step["clipped_or_not"].float().mean()})
             # wandb.log({"gradient_norms": torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)})
 
-            if (i+1) % GRADIENT_ACCUMULATION_STEPS == 0:
+            if total_samples_processed % (TRAIN_BATCH_SIZE) == 0:
                 # weights norm
                 with torch.no_grad():
                     weight_norm_before_step = 0
@@ -246,4 +258,4 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
 
                 utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
                 utils.print_format_reward_0(log_generations_dict["examples"], 3)
-                utils.print_format_reward_1_answer_reward_0(log_generations_dict["examples"], 3)
+                utils.print_format_reward_1_answer_reward_0(log_generations_dict["examples"], 3)#
