@@ -237,7 +237,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     print("histogram: ", histogram)
                     val_accuracy = histogram["correct with both format and answer reward 1"] / sum(histogram.values())
                     print("Percentage of correct examples: ", val_accuracy)
-                    wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "grpo_iteration": grpo_iteration}) # make the x axis of plot epoch
+                    wandb.log({"val_accuracy": val_accuracy, "epoch": epoch, "grpo_iteration": grpo_iteration, "total_samples_processed": total_samples_processed}) # make the x axis of plot epoch
 
 
             utils.print_format_reward_1_answer_reward_1(log_generations_dict["examples"], 3)
