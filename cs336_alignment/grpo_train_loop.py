@@ -200,6 +200,9 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
         input_ids_epoch = input_ids[shuffle_rollout_batch_indices, :]
         labels_epoch = labels[shuffle_rollout_batch_indices, :]
         response_mask_epoch = response_mask[shuffle_rollout_batch_indices, :]
+        advantages_epoch = advantages[shuffle_rollout_batch_indices]
+        raw_rewards_epoch = raw_rewards[shuffle_rollout_batch_indices]
+        old_log_probs_epoch = old_log_probs[shuffle_rollout_batch_indices, :]
 
         for i in range(0, ROLLOUT_BATCH_SIZE // micro_train_batch_size):
             total_samples_processed += micro_train_batch_size
@@ -212,7 +215,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             response_mask_batch = response_mask_epoch[batch_indices, :]
             policy_log_probs = utils.get_response_log_probs(model, input_ids_batch, labels_batch, return_token_entropy=False)["log_probs"]
             utils.mem("Before grpo microbatch train step")
-            loss, metadata_train_step = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards[batch_indices], advantages=advantages[batch_indices], old_log_probs=old_log_probs[batch_indices,:], cliprange=CLIPRANGE, use_length_normalization=USE_LENGTH_NORMALIZATION, max_new_tokens=MAX_TOKENS_TRAIN)
+            loss, metadata_train_step = grpo.grpo_microbatch_train_step(policy_log_probs, response_mask_batch, GRADIENT_ACCUMULATION_STEPS, LOSS_TYPE, raw_rewards=raw_rewards_epoch[batch_indices], advantages=advantages_epoch[batch_indices], old_log_probs=old_log_probs_epoch[batch_indices,:], cliprange=CLIPRANGE, use_length_normalization=USE_LENGTH_NORMALIZATION, max_new_tokens=MAX_TOKENS_TRAIN)
             utils.mem("After grpo microbatch train step")
 
             ## log weights and gradient norms 
