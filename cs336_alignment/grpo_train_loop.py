@@ -171,8 +171,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     old_log_probs = torch.empty(input_ids.shape, dtype=torch.float32).to(device_hf)
     if LOSS_TYPE == "grpo_clip":
         with torch.inference_mode():
-            for i in range(0, TRAIN_BATCH_SIZE // micro_train_batch_size):
-                last_index = min((i+1) * micro_train_batch_size, TRAIN_BATCH_SIZE)
+            for i in range(0, ROLLOUT_BATCH_SIZE // micro_train_batch_size):
+                last_index = min((i+1) * micro_train_batch_size, ROLLOUT_BATCH_SIZE)
                 batch_indices = torch.arange(i * micro_train_batch_size, last_index)
                 input_ids_batch = input_ids[batch_indices, :]
                 labels_batch = labels[batch_indices, :]
