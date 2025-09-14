@@ -40,7 +40,7 @@ def get_args():
     parser.add_argument("--max_tokens_eval", type=int, default=1024)
     # parser.add_argument("--loss_type", type=Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"], default="reinforce_with_baseline")
     parser.add_argument("--use_std_normalization", type=bool, default=True)
-    parser.add_argument("--use_masked_mean_normalization", type=bool, default=False)
+    parser.add_argument("--use_length_normalization", type=bool, default=True)
     return parser.parse_args()
 
 args = get_args()
