@@ -62,7 +62,7 @@ def compute_grpo_clip_loss(
     log_ratio = policy_log_probs - old_log_probs
     importance_ratios = torch.exp(log_ratio.to(torch.float64)).to(torch.float32)
     with torch.no_grad():
-        if torch.abs(log_ratio.max()) > 10:
+        if torch.abs(log_ratio).max() > 10:
             print("log_ratio: ", log_ratio.max())
             print("policy_log_probs: ", policy_log_probs.max())
             print("old_log_probs: ", old_log_probs.max())
