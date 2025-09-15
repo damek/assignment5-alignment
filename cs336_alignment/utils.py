@@ -390,5 +390,5 @@ def get_weight_norm(model):
     with torch.no_grad():
         weight_norm = torch.tensor(0.0, device=model.device)
         for param in model.parameters():
-            weight_norm += param.square().sum()
-        return torch.sqrt(weight_norm)
+            weight_norm += param.norm()
+        return weight_norm
