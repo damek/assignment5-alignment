@@ -232,7 +232,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             print(
                 "GRPO Iteration: ", grpo_iteration, 
                 "Epoch: ", epoch, 
-                "Microbatch: ", i, "/", ROLLOUT_BATCH_SIZE // micro_train_batch_size,
+                "Microbatch: ", i, "/", ROLLOUT_BATCH_SIZE,
                 "total_samples_processed: ", total_samples_processed
                 )
 
