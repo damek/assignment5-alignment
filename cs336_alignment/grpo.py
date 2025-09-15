@@ -59,7 +59,7 @@ def compute_grpo_clip_loss(
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 
     log_ratio   = torch.clamp(policy_log_probs - old_log_probs, -20, 20) #### BE SAFE HERE
-    log_ratio = policy_log_probs - old_log_probs
+    # log_ratio = policy_log_probs - old_log_probs
     importance_ratios = torch.exp(log_ratio.to(torch.float64)).to(torch.float32)
     # with torch.no_grad():
     #     print("log_ratio: ", torch.abs(log_ratio).max())
