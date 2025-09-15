@@ -393,34 +393,3 @@ def get_weight_norm(model):
             weight_norm += param.norm()
         return weight_norm
 
-def set_all_seeds(seed=42):
-    """
-    Simple version: Set all seeds for reproducibility.
-    """
-    import os
-    import random
-    import numpy as np
-    import torch
-    
-    # Environment
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
-    
-    # Python, Numpy, PyTorch
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    
-    # CuDNN
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    torch.use_deterministic_algorithms(True)
-    
-    # Transformers (if available)
-    try:
-        from transformers import set_seed
-        set_seed(seed)
-    except ImportError:
-        pass
