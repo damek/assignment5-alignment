@@ -304,7 +304,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     vllm_model=vllm_model, 
                     hf_model=model, 
                     tokenizer=tokenizer, 
-                    eval_dataset_r1_zero=eval_dataset_r1_zero, 
+                    dataset=eval_dataset_r1_zero, 
                     max_tokens=MAX_TOKENS_EVAL)
 
                 wandb.log(log_generations_dict) # index x by epoch
