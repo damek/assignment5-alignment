@@ -61,6 +61,12 @@ def compute_grpo_clip_loss(
     # log_ratio   = torch.clamp(policy_log_probs - old_log_probs, -10, 10) #### BE SAFE HERE
     log_ratio = policy_log_probs - old_log_probs
     importance_ratios = torch.exp(log_ratio)
+    if importance_ratios.max() > 1000:
+        print("importance_ratios: ", importance_ratios.max())
+        print("log_ratio: ", log_ratio.max())
+        print("policy_log_probs: ", policy_log_probs.max())
+        print("old_log_probs: ", old_log_probs.max())
+        print("advantages: ", advantages.max())
     term_1 = advantages[:, None] * importance_ratios
     term_2 = advantages[:, None] * torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange)
     metadata = {
