@@ -89,7 +89,6 @@ def compute_grpo_clip_loss(
     assert_finite("term_2", term_2)
     assert_finite("importance_ratios", importance_ratios)
     assert_finite("advantages", advantages)
-    assert_finite("cliprange", cliprange)
     assert_finite("log_ratio", log_ratio)
     assert_finite("policy_log_probs", policy_log_probs)
     assert_finite("old_log_probs", old_log_probs)
