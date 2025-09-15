@@ -259,6 +259,9 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 use_length_normalization=USE_LENGTH_NORMALIZATION, 
                 max_new_tokens=MAX_TOKENS_TRAIN)
             utils.mem("After grpo microbatch train step")
+            with torch.no_grad():
+                # log the ratio in wandb
+                wandb.log({"log_ratio": torch.abs(policy_log_probs - old_log_probs_epoch[batch_indices, :]).max()})
 
             ## log weights and gradient norms 
             with torch.no_grad():
