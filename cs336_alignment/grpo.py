@@ -51,6 +51,19 @@ def compute_naive_policy_gradient_loss(
     ) -> torch.Tensor:
     return -raw_rewards_or_advantages[:, None] * policy_log_probs
 
+def assert_finite(name, x):
+    if not torch.isfinite(x).all():
+        bad = (~torch.isfinite(x))
+        msg = (f"[NaNGuard] {name} has non-finite values: "
+               f"nan={torch.isnan(x).any().item()}, inf={torch.isinf(x).any().item()}")
+        # Optional: show where
+        with torch.no_grad():
+            if x.dim() > 1:
+                rows = bad.any(dim=list(range(1, x.dim())))
+                bad_rows = torch.where(rows)[0][:8]  # first few
+                msg += f", bad_rows={bad_rows.tolist()}"
+        raise RuntimeError(msg)
+
 def compute_grpo_clip_loss(
     advantages: torch.Tensor,
     policy_log_probs: torch.Tensor,
@@ -72,6 +85,14 @@ def compute_grpo_clip_loss(
     metadata = {
         "clipped_or_not": torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange) == importance_ratios,
     }
+    assert_finite("term_1", term_1)
+    assert_finite("term_2", term_2)
+    assert_finite("importance_ratios", importance_ratios)
+    assert_finite("advantages", advantages)
+    assert_finite("cliprange", cliprange)
+    assert_finite("log_ratio", log_ratio)
+    assert_finite("policy_log_probs", policy_log_probs)
+    assert_finite("old_log_probs", old_log_probs)
     return -torch.min(term_1, term_2), metadata
 
 def compute_policy_gradient_loss(
