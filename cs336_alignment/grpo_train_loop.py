@@ -52,8 +52,7 @@ PROMPT_PATH = args.prompt_path
 OUTPUT_PATH = args.output_path
 
 SEED = 42
-torch.manual_seed(SEED)
-np.random.seed(SEED)
+utils.set_all_seeds(SEED)
 GRADIENT_ACCUMULATION_STEPS = args.gradient_accumulation_steps
 LR = args.lr
 WANDB_PROJECT = "cs336-grpo-experiment"
