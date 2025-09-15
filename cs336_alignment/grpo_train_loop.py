@@ -220,12 +220,12 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
         else:   
             epoch_indices = torch.randperm(ROLLOUT_BATCH_SIZE)
 
-        input_ids_epoch = input_ids[epoch_indices, :]
-        labels_epoch = labels[epoch_indices, :]
-        response_mask_epoch = response_mask[epoch_indices, :]
-        advantages_epoch = advantages[epoch_indices]
-        raw_rewards_epoch = raw_rewards[epoch_indices]
-        old_log_probs_epoch = old_log_probs[epoch_indices, :]
+        input_ids_epoch = input_ids[epoch_indices, :].contiguous() 
+        labels_epoch = labels[epoch_indices, :].contiguous()
+        response_mask_epoch = response_mask[epoch_indices, :].contiguous()
+        advantages_epoch = advantages[epoch_indices].contiguous()
+        raw_rewards_epoch = raw_rewards[epoch_indices].contiguous()
+        old_log_probs_epoch = old_log_probs[epoch_indices, :].contiguous()
 
         for i in range(0, ROLLOUT_BATCH_SIZE, micro_train_batch_size):
             total_samples_processed += micro_train_batch_size
