@@ -54,3 +54,8 @@ Conclusions:
 Running a few more tests with (2, 256) and (2, 128) and lr 1e-5 to see if we get progress and don't blow up.
 (2, 256) died. 
 Maybe I should simplify the loop logic regarding multiple rollouts.
+
+Bizarre, I tried (2, 256) again and it worked for a bit, but then fell to .08%. Not sure how that happened. The gradient norms and everythign else look fine. 
+
+I think i'm going to try to re-run the (1, 256) with the same code to see if there are any issues.
+

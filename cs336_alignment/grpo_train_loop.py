@@ -262,9 +262,10 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
 
             ## log weights and gradient norms 
             with torch.no_grad():
-                grad_norm = 0
+                grad_norm = torch.tensor(0.0, device=model.device)
                 for param in model.parameters():
-                    grad_norm += param.grad.norm()
+                    grad_norm += param.grad.sum()**2
+                grad_norm = torch.sqrt(grad_norm)
             # wandb.log({"gradient_norms": grad_norm})
             # log the rewards and the norm of the advantages
             wandb.log(
