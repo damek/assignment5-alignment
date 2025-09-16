@@ -16,6 +16,11 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
+print("Cleaning up wandb local storage...")
+os.system("rm -rf wandb/")
+os.system("rm -rf ~/.cache/wandb/")
+print("Wandb cleanup complete.")
+
 
 def get_args():
     parser = argparse.ArgumentParser()
