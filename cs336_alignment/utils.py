@@ -277,7 +277,10 @@ def log_generations(
     temperature=1.0,
     top_p=1.0,
     log_token_entropy=False,
+    reward_fn=r1_zero_reward_fn,
 ):
+    if reward_fn is None:
+        reward_fn = r1_zero_reward_fn
     with torch.inference_mode():
         if batch_size is None:
             batch_size = len(dataset)
@@ -353,8 +356,10 @@ def make_expert_iteration_batch(
     max_tokens = 1024,
     temperature =1.0,
     top_p =1.0,
+    reward_fn=r1_zero_reward_fn,
     ) -> list[dict]:
-
+    if reward_fn is None:
+        reward_fn = r1_zero_reward_fn
     prompts = [data["prompt"] for data in data_batch]
     gt_answers = [data["answer"] for data in data_batch]
     eval_sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)

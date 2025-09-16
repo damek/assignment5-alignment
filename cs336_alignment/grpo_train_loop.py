@@ -6,7 +6,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import wandb
 import argparse
 import os
-from drgrpo_grader import r1_zero_reward_fn
+from drgrpo_grader import r1_zero_reward_fn, ques
 import numpy as np
 import gc
 import grpo
@@ -40,6 +40,7 @@ def get_args():
         choices=["no_baseline", "reinforce_with_baseline", "grpo_clip", "grpo_no_clip"],
         default="reinforce_with_baseline",
     )
+    parser.add_argument("--reward_fn", type=str, choices=["question_only_reward_fn", "r1_question_reward_fn"], default="r1_question_reward_fn")
     parser.add_argument("--group_size", type=int, default=8)
     parser.add_argument("--max_tokens_train", type=int, default=1024)
     parser.add_argument("--max_tokens_eval", type=int, default=1024)
@@ -47,6 +48,7 @@ def get_args():
     parser.add_argument("--use_std_normalization", type=bool, default=True)
     parser.add_argument("--use_length_normalization", type=bool, default=True)
     parser.add_argument("--cliprange", type=float, default=None)
+
     return parser.parse_args()
 
 args = get_args()
@@ -80,6 +82,7 @@ LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 CLIPRANGE: float | None = args.cliprange
+reward_fn = args.reward_fn
 if LOSS_TYPE == "grpo_clip":
     assert CLIPRANGE is not None, "cliprange must be provided for grpo_clip loss, e.g., --cliprange 0.2."
 
@@ -164,7 +167,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
         vllm_model=vllm_model, 
         dataset=train_dataset_r1_zero_grpo_step, 
         group_size=GROUP_SIZE, 
-        reward_fn=r1_zero_reward_fn, 
+        reward_fn=reward_fn, 
         max_tokens=MAX_TOKENS_TRAIN, 
         temperature=TEMPERATURE, 
         top_p=TOP_P)
@@ -181,7 +184,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     response_mask = tokenize_samples["response_mask"].to(device_hf)
 
     advantages, raw_rewards, metadata = grpo.compute_group_normalized_rewards(
-        reward_fn=r1_zero_reward_fn, 
+        reward_fn=reward_fn, 
         rollout_responses=[data["response"] for data in prompt_response_answer_flattened], 
         repeated_ground_truths=[data["answer"] for data in prompt_response_answer_flattened], 
         group_size=GROUP_SIZE, 
