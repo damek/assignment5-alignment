@@ -203,7 +203,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
 
     # print the rollouts with new line characters, include rewards, not advantage
     print("-"*100)
-    print("Here are a few rollouts: ", "\n".join([f"Prompt: {r['prompt']}\nResponse: {r['response']}\nAnswer: {r['answer']}\nReward: {r['reward']}" for r in zip(prompt_response_answer_flattened[:3], raw_rewards[:3])]))
+    print("Here are a few rollouts: ", "\n".join([f"Prompt: {r['prompt']}\nResponse: {r['response']}\nAnswer: {r['answer']}" for r in prompt_response_answer_flattened[:3]]))
+    print("Here are a few rewards: ", raw_rewards[:3])
     print("-"*100)
 
     if LOSS_TYPE == "grpo_clip" or LOSS_TYPE == "grpo_no_clip":
