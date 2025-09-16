@@ -358,7 +358,7 @@ def make_expert_iteration_batch(
     max_tokens = 1024,
     temperature =1.0,
     top_p =1.0,
-    reward_fn=r1_zero_reward_fn,
+    reward_fn=None,
     ) -> list[dict]:
     if reward_fn is None:
         reward_fn = r1_zero_reward_fn
@@ -368,7 +368,7 @@ def make_expert_iteration_batch(
     eval_sampling_params.stop = ["</answer>"]
     eval_sampling_params.min_tokens = 4
     eval_sampling_params.include_stop_str_in_output = True
-    rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, data_batch, eval_sampling_params)
+    rewards, responses = evaluate_vllm(vllm_model, reward_fn, data_batch, eval_sampling_params)
     
     # now we'll filter through the responses and only keep the correct ones, 
     # saving each one as a new training sample in a dataset 
