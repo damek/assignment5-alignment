@@ -133,7 +133,7 @@ def compute_policy_gradient_loss(
             advantages=advantages,
             policy_log_probs=policy_log_probs,
             old_log_probs=old_log_probs,
-        ), {}
+        )
     elif loss_type == "grpo_clip":
         assert advantages is not None
         assert old_log_probs is not None
