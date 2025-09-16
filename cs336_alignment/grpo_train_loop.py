@@ -82,6 +82,7 @@ USE_STD_NORMALIZATION: bool = args.use_std_normalization
 USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 CLIPRANGE: float | None = args.cliprange
 reward_fn = r1_zero_reward_fn if PROMPT_PATH == "prompts/r1_zero.prompt" else question_only_reward_fn
+use_answer_tag = True if PROMPT_PATH == "prompts/r1_zero.prompt" else False
 if LOSS_TYPE == "grpo_clip":
     assert CLIPRANGE is not None, "cliprange must be provided for grpo_clip loss, e.g., --cliprange 0.2."
 
@@ -172,7 +173,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
         reward_fn=reward_fn, 
         max_tokens=MAX_TOKENS_TRAIN, 
         temperature=TEMPERATURE, 
-        top_p=TOP_P)
+        top_p=TOP_P,
+        use_answer_tag=use_answer_tag)
 
     # Rollouts
     tokenize_samples = utils.tokenize_prompt_and_output(
@@ -321,7 +323,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     tokenizer=tokenizer, 
                     dataset=eval_dataset_r1_zero, 
                     max_tokens=MAX_TOKENS_EVAL,
-                    reward_fn=reward_fn)
+                    reward_fn=reward_fn,
+                    use_answer_tag=use_answer_tag)
 
                 wandb.log(log_generations_dict) # index x by epoch
 
