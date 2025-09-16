@@ -23,10 +23,12 @@ My conclusion after trying to debug my code (never found any serious issues):
     1. We see no more rewards in the rollouts, so training stalls. 
     2. While it's dropping in accuracy, it takes val down with it. 
 - Case 1 occured when the stepsize was .5e-6. Case 2 occured when the stepsize was between .75e-5 and 1.5e-5.
+- The red curve in the plot below is the one anomolgy. Where the stepsize was 1.5e-5, batchsize 32, epochs = 1. The val acc died, but then rose again eventually.
 - When the stepsize was 1e-6, val accuracy never increased from ~0.
 - The above was happened whether we were using 1, 2, or 4 epochs and various trainin batch sizes. 
 
 ![GRPO with clip loss](./figures/grpo_crash_burn.png)
+![GRPO with clip loss](./figures/grpo_crash_burn_batch.png)
 
 **A happy mistakes:**
 - I found that when using reinforce with baseline (i.e., multiple epochs without clip loss or importance sampling), the training curves were mostly fine.
