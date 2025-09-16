@@ -2,8 +2,8 @@ echo "Cleaning up wandb local storage..."
 rm -rf wandb/
 rm -rf ~/.cache/wandb/
 echo "Wandb cleanup complete."
-# "2 256" "1 128" "4 256" 
-for t in "2 128" "1 64" "4 128" "2 64" "1 32"; do
+# "2 256" "1 128" "4 256" "2 128"
+for t in "1 64" "4 128" "2 64" "1 32"; do
     set -- $t # Convert the "tuple" into the param args $1 $2...
     EPOCHS_PER_ROLLOUT_BATCH=$1
     TRAIN_BATCH_SIZE=$2
