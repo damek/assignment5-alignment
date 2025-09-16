@@ -56,9 +56,9 @@ git clone https://github.com/damek/assignment5-alignment.git
 pip install uv
 cd assignment5-alignment
 export PATH="$HOME/.local/bin:$PATH"
-uv sync
-uv venv
+uv venv --system-site-packages
 source .venv/bin/activate
+uv sync --no-install-package flash-attn
 uv sync
 ```
 
