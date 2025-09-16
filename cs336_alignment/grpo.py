@@ -198,7 +198,6 @@ def sample_rollouts(
     dataset: list[dict],
     group_size: int,
     reward_fn,
-    stop_token,
     max_tokens = 1024,
     temperature = 1.0,
     top_p = 1.0,
