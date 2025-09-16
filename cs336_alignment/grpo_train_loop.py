@@ -83,6 +83,7 @@ USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 CLIPRANGE: float | None = args.cliprange
 reward_fn = r1_zero_reward_fn if PROMPT_PATH == "prompts/r1_zero.prompt" else question_only_reward_fn
 use_answer_tag = True if PROMPT_PATH == "prompts/r1_zero.prompt" else False
+
 if LOSS_TYPE == "grpo_clip":
     assert CLIPRANGE is not None, "cliprange must be provided for grpo_clip loss, e.g., --cliprange 0.2."
 
