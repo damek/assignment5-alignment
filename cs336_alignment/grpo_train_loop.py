@@ -201,9 +201,9 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     raw_rewards = raw_rewards.to(device_hf)
     old_log_probs = torch.empty(input_ids.shape, dtype=torch.float32).to(device_hf)
 
-    # print the rollouts with new line characters
+    # print the rollouts with new line characters, include rewards
     print("-"*100)
-    print("Here are a few rollouts: ", "\n".join([f"Prompt: {r['prompt']}\nResponse: {r['response']}\nAnswer: {r['answer']}" for r in prompt_response_answer_flattened[:3]]))
+    print("Here are a few rollouts: ", "\n".join([f"Prompt: {r['prompt']}\nResponse: {r['response']}\nAnswer: {r['answer']}\nReward: {r['reward']}\nAdvantage: {r['advantage']}" for r in prompt_response_answer_flattened[:3]]))
     print("-"*100)
 
     if LOSS_TYPE == "grpo_clip" or LOSS_TYPE == "grpo_no_clip":
