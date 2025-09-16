@@ -88,9 +88,28 @@ def compute_grpo_clip_loss(
     assert_finite("old_log_probs", old_log_probs)
     return -torch.min(term_1, term_2), metadata
 
+def compute_grpo_no_clip_loss(
+    advantages: torch.Tensor,
+    policy_log_probs: torch.Tensor,
+    old_log_probs: torch.Tensor,
+    cliprange: float,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+
+    # log_ratios = torch.clamp(policy_log_probs - old_log_probs, -5, 5) #### BE SAFE HERE
+    # ratios = log_ratios.exp()
+    ratios = (policy_log_probs - old_log_probs).exp()
+    term = ratios * advantages[:, None] 
+    assert_finite("term", term)
+    assert_finite("ratios", ratios)
+    assert_finite("advantages", advantages)
+    assert_finite("log_ratio", policy_log_probs - old_log_probs)
+    assert_finite("policy_log_probs", policy_log_probs)
+    assert_finite("old_log_probs", old_log_probs)
+    return -term, {}
+
 def compute_policy_gradient_loss(
     policy_log_probs: torch.Tensor,
-    loss_type: Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"],
+    loss_type: Literal["no_baseline", "reinforce_with_baseline", "grpo_clip", "grpo_no_clip"],
     raw_rewards: torch.Tensor | None = None,
     advantages: torch.Tensor | None = None,
     old_log_probs: torch.Tensor | None = None,
@@ -108,6 +127,13 @@ def compute_policy_gradient_loss(
         return compute_naive_policy_gradient_loss(
             raw_rewards_or_advantages=advantages,
             policy_log_probs=policy_log_probs,
+        ), {}
+    elif loss_type == "grpo_no_clip":
+        assert advantages is not None
+        return compute_grpo_no_clip_loss(
+            advantages=advantages,
+            policy_log_probs=policy_log_probs,
+            old_log_probs=old_log_probs,
         ), {}
     elif loss_type == "grpo_clip":
         assert advantages is not None

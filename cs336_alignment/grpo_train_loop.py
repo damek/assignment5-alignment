@@ -37,7 +37,7 @@ def get_args():
     parser.add_argument(
         "--loss_type",
         type=str,
-        choices=["no_baseline", "reinforce_with_baseline", "grpo_clip"],
+        choices=["no_baseline", "reinforce_with_baseline", "grpo_clip", "grpo_no_clip"],
         default="reinforce_with_baseline",
     )
     parser.add_argument("--group_size", type=int, default=8)
@@ -193,7 +193,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     raw_rewards = raw_rewards.to(device_hf)
     old_log_probs = torch.empty(input_ids.shape, dtype=torch.float32).to(device_hf)
 
-    if LOSS_TYPE == "grpo_clip":
+    if LOSS_TYPE == "grpo_clip" or LOSS_TYPE == "grpo_no_clip":
         print("Computing old log probs...")
         with torch.inference_mode():
             for i in range(0, ROLLOUT_BATCH_SIZE // micro_train_batch_size):
