@@ -92,7 +92,6 @@ def compute_grpo_no_clip_loss(
     advantages: torch.Tensor,
     policy_log_probs: torch.Tensor,
     old_log_probs: torch.Tensor,
-    cliprange: float,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 
     # log_ratios = torch.clamp(policy_log_probs - old_log_probs, -5, 5) #### BE SAFE HERE
