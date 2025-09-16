@@ -137,12 +137,12 @@ print("Loading dataset...")
 train_dataset = utils.load_dataset(TRAIN_DATASET_PATH)
 eval_dataset = utils.load_dataset(EVAL_DATASET_PATH)
 # OK now we're going to process the dataset into the r_1_zero format.
-train_dataset_r1_zero = utils.data_set_to_prompt_response_answer(train_dataset, prompt_path=PROMPT_PATH)
+train_dataset_formatted = utils.data_set_to_prompt_response_answer(train_dataset, prompt_path=PROMPT_PATH)
 
-eval_dataset_r1_zero = utils.data_set_to_prompt_response_answer(eval_dataset, prompt_path=PROMPT_PATH)
+eval_dataset_formatted = utils.data_set_to_prompt_response_answer(eval_dataset, prompt_path=PROMPT_PATH)
 
-print("eval dataset: ", eval_dataset_r1_zero[:10])
-print("train dataset: ", train_dataset_r1_zero[:10])
+print("eval dataset: ", eval_dataset_formatted[:10])
+print("train dataset: ", train_dataset_formatted[:10])
 
 optimizer = torch.optim.AdamW(
 model.parameters(),
@@ -162,14 +162,14 @@ total_samples_processed = 0
 for grpo_iteration in range(NUM_GRPO_ITERATIONS):
     # first thing to do is sample n_prompts_per_rollout_batch examples from the train dataset    
     sample = torch.randperm(len(train_dataset))[:n_prompts_per_rollout_batch]
-    train_dataset_r1_zero_grpo_step = [train_dataset_r1_zero[i] for i in sample]
+    train_dataset_formatted_grpo_step = [train_dataset_formatted[i] for i in sample]
     # Load model into vllm
     vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
     utils.mem("after HF policy load")
     # Do rollouts from VLLM model
     rewards, prompt_response_answer_flattened  = grpo.sample_rollouts(
         vllm_model=vllm_model, 
-        dataset=train_dataset_r1_zero_grpo_step, 
+        dataset=train_dataset_formatted_grpo_step, 
         group_size=GROUP_SIZE, 
         reward_fn=reward_fn, 
         max_tokens=MAX_TOKENS_TRAIN, 
@@ -328,7 +328,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     vllm_model=vllm_model, 
                     hf_model=model, 
                     tokenizer=tokenizer, 
-                    dataset=eval_dataset_r1_zero, 
+                    dataset=eval_dataset_formatted, 
                     max_tokens=MAX_TOKENS_EVAL,
                     reward_fn=reward_fn,
                     use_answer_tag=use_answer_tag)
