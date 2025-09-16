@@ -1,5 +1,7 @@
 # CS336 Spring 2025 Assignment 5: Alignment
 
+This assignment is done!
+
 Follow along on twitter [here](https://x.com/damekdavis/status/1964777367832010923).
 
 ## Problems
