@@ -82,7 +82,7 @@ def compute_grpo_clip_loss(
     assert_finite("term_2", term_2)
     assert_finite("ratios", ratios)
     assert_finite("advantages", advantages)
-    assert_finite("log_ratio", log_ratio)
+    assert_finite("log_ratio", log_ratios)
     assert_finite("policy_log_probs", policy_log_probs)
     assert_finite("old_log_probs", old_log_probs)
     return -torch.min(term_1, term_2), metadata
