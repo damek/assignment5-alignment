@@ -202,14 +202,16 @@ def sample_rollouts(
     max_tokens = 1024,
     temperature = 1.0,
     top_p = 1.0,
+    use_answer_tag=True,
 ) -> list[str]:
     sampling_params = SamplingParams(
         n=group_size, 
         temperature=temperature, 
         top_p=top_p, 
         max_tokens=max_tokens)
-    sampling_params.stop = ["</answer>"]
-    sampling_params.include_stop_str_in_output = True
+    if use_answer_tag:
+        sampling_params.stop = ["</answer>"]
+        sampling_params.include_stop_str_in_output = True
     sampling_params.min_tokens = 4
     rewards, responses = utils.evaluate_vllm(
         reward_fn=reward_fn,

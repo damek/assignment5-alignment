@@ -140,10 +140,11 @@ def create_model(model_name_or_path):
     model = LLM(model=model_name_or_path)
     return model
 
-def generate_outputs(prompts, model):
+def generate_outputs(prompts, model, use_answer_tag=True):
     sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=1024)
-    sampling_params.stop = ["</answer>"]
-    sampling_params.include_stop_str_in_output = True
+    if use_answer_tag:
+        sampling_params.stop = ["</answer>"]
+        sampling_params.include_stop_str_in_output = True
     return model.generate(prompts, sampling_params)
 
 def extract_gt(ans: str) -> str:
@@ -280,6 +281,7 @@ def log_generations(
     top_p=1.0,
     log_token_entropy=False,
     reward_fn=r1_zero_reward_fn,
+    use_answer_tag=True,
 ):
     if reward_fn is None:
         reward_fn = r1_zero_reward_fn
@@ -292,9 +294,10 @@ def log_generations(
 
         # Sample generations from VLLM Model
         eval_sampling_params = SamplingParams(temperature=temperature, top_p=top_p, max_tokens=max_tokens)
-        eval_sampling_params.stop = ["</answer>"]
-        eval_sampling_params.include_stop_str_in_output = True
-        rewards, responses = evaluate_vllm(vllm_model, r1_zero_reward_fn, dataset, eval_sampling_params)
+        if use_answer_tag:
+            eval_sampling_params.stop = ["</answer>"]
+            eval_sampling_params.include_stop_str_in_output = True
+        rewards, responses = evaluate_vllm(vllm_model, reward_fn, dataset, eval_sampling_params)
         responses = [response.outputs[0].text for response in responses]
 
         # Tokenize prompt and output
@@ -359,15 +362,17 @@ def make_expert_iteration_batch(
     temperature =1.0,
     top_p =1.0,
     reward_fn=None,
+    use_answer_tag=True,
     ) -> list[dict]:
     if reward_fn is None:
         reward_fn = r1_zero_reward_fn
     prompts = [data["prompt"] for data in data_batch]
     gt_answers = [data["answer"] for data in data_batch]
     eval_sampling_params = SamplingParams(n=num_rollouts, temperature=temperature, top_p=top_p, max_tokens=max_tokens)
-    eval_sampling_params.stop = ["</answer>"]
+    if use_answer_tag:
+        eval_sampling_params.stop = ["</answer>"]
+        eval_sampling_params.include_stop_str_in_output = True
     eval_sampling_params.min_tokens = 4
-    eval_sampling_params.include_stop_str_in_output = True
     rewards, responses = evaluate_vllm(vllm_model, reward_fn, data_batch, eval_sampling_params)
     
     # now we'll filter through the responses and only keep the correct ones, 
