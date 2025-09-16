@@ -45,8 +45,8 @@
 - GRPO length normalization: compare masked_mean and masked_normalize
     - Results [grpo_length_normalization.md](./cs336_alignment/outputs/grpo_length_normalization.md)
 - GRPO off policy sweep: sweep the off policy settings
-    - IN PROGRESS: Results [grpo_off_policy_sweep.md](./cs336_alignment/outputs/grpo_off_policy_sweep.md)
-
+    - Sweep with bash script [grpo_off_policy_sweep.sh](./cs336_alignment/grpo_off_policy_sweep.sh)
+    - Results [grpo_off_policy_sweep.md](./cs336_alignment/outputs/grpo_off_policy_sweep.md)
 
 ## How to run
 
