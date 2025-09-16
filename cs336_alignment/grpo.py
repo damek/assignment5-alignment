@@ -71,16 +71,16 @@ def compute_grpo_clip_loss(
     cliprange: float,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
 
-    log_ratio   = torch.clamp(policy_log_probs - old_log_probs, -5, 5) #### BE SAFE HERE
-    importance_ratios = torch.exp(log_ratio.to(torch.float64)).to(torch.float32)
-    term_1 = advantages[:, None] * importance_ratios
-    term_2 = advantages[:, None] * torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange)
+    log_ratios = torch.clamp(policy_log_probs - old_log_probs, -5, 5) #### BE SAFE HERE
+    ratios = log_ratios.exp()
+    term_1 = ratios * advantages[:, None] 
+    term_2 = ratios.clamp(1 - cliprange, 1 + cliprange) * advantages[:, None]
     metadata = {
-        "clipped_or_not": torch.clamp(importance_ratios, 1 - cliprange, 1 + cliprange) == importance_ratios,
+        "clipped_or_not": torch.clamp(ratios, 1 - cliprange, 1 + cliprange) == ratios,
     }
     assert_finite("term_1", term_1)
     assert_finite("term_2", term_2)
-    assert_finite("importance_ratios", importance_ratios)
+    assert_finite("ratios", ratios)
     assert_finite("advantages", advantages)
     assert_finite("log_ratio", log_ratio)
     assert_finite("policy_log_probs", policy_log_probs)
