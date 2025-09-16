@@ -26,7 +26,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--train_dataset_path", type=str, default="../data/gsm8k/train.jsonl")
     parser.add_argument("--eval_dataset_path", type=str, default="../data/gsm8k/test.jsonl")
-    parser.add_argument("--prompt_path", type=str, choices=["r1_zero.prompt", "question_only.prompt"], default="r1_zero.prompt")
+    parser.add_argument("--prompt_path", type=str, choices=["prompts/r1_zero.prompt", "prompts/question_only.prompt"], default="prompts/r1_zero.prompt")
     parser.add_argument("--output_path", type=str, default="outputs/sft_experiment.jsonl")
     parser.add_argument("--train_batch_size", type=int, default=256)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=128)
@@ -81,7 +81,7 @@ LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 CLIPRANGE: float | None = args.cliprange
-reward_fn = r1_zero_reward_fn if PROMPT_PATH == "r1_zero.prompt" else question_only_reward_fn
+reward_fn = r1_zero_reward_fn if PROMPT_PATH == "prompts/r1_zero.prompt" else question_only_reward_fn
 if LOSS_TYPE == "grpo_clip":
     assert CLIPRANGE is not None, "cliprange must be provided for grpo_clip loss, e.g., --cliprange 0.2."
 
