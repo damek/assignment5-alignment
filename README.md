@@ -1,5 +1,7 @@
 # CS336 Spring 2025 Assignment 5: Alignment
 
+Follow along on twitter [here](https://x.com/damekdavis/status/1964777367832010923).
+
 ## Problems
 
 - Math baseline: run qwen 2.5 1.5B on gsm8k
@@ -49,6 +51,8 @@
     - Results [grpo_off_policy_sweep.md](./cs336_alignment/outputs/grpo_off_policy_sweep.md)
 - GRPO off policy clip ablation: run the unclipped version of the loss
     - Results [grpo_off_policy_clip_ablation.md](./cs336_alignment/outputs/grpo_off_policy_clip_ablation.md)
+- GRPO prompt ablation: run the prompt ablation
+    - Results [grpo_prompt_ablation.md](./cs336_alignment/outputs/grpo_prompt_ablation.md)
 
 
 ## How to run
