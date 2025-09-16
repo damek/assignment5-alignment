@@ -47,6 +47,9 @@
 - GRPO off policy sweep: sweep the off policy settings
     - Sweep with bash script [grpo_off_policy_sweep.sh](./cs336_alignment/grpo_off_policy_sweep.sh)
     - Results [grpo_off_policy_sweep.md](./cs336_alignment/outputs/grpo_off_policy_sweep.md)
+- GRPO off policy clip ablation: run the unclipped version of the loss
+    - Results [grpo_off_policy_clip_ablation.md](./cs336_alignment/outputs/grpo_off_policy_clip_ablation.md)
+
 
 ## How to run
 
