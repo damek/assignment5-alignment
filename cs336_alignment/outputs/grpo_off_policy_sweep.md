@@ -15,47 +15,22 @@ Hint: you will need to change gradient_accumulation_steps to keep memory usage c
 
 ---- 
 
-Strategy, going to run for a bit and terminate early when things start to when validation loss stalls Going to try to find the extremes: 
+My conclusion after trying to debug my code (never found any serious issues): 
 
+**GRPO with clip loss:**
+- Increases the val acc at a similar rate to the on policy run. 
+- However, the batch accuracy eventually drops to 0. When the batch accuracy drops to zero, two things can happen:
+    1. We see no more rewards in the rollouts, so training stalls. 
+    2. While it's dropping in accuracy, it takes val down with it. 
+- Case 1 occured when the stepsize was .5e-6. Case 2 occured when the stepsize was between .75e-5 and 1.5e-5.
+- When the stepsize was 1e-6, val accuracy never increased from ~0.
+- The above was happened whether we were using 1, 2, or 4 epochs and various trainin batch sizes. 
 
-too small and too large epochs/train_batch_size and do some bisection (because I don't want to wait 12 hrs).
+![GRPO with clip loss](./figures/grpo_crash_burn.png)
 
-I've tried in this order:
-(epoch, train_batch_size)
-**Parallel batch 1:**
-- (1, 1024): too slow
-- (5, 256): crashed out. I think 5 is too many per grpo_iteration.
+**A happy mistakes:**
+- I found that when using reinforce with baseline (i.e., multiple epochs without clip loss or importance sampling), the training curves were mostly fine.
 
-**Parallel batch 2:**
-We're going to try to stick to the same budget per grpo_iteration as in the original experiments (256 gradients touched in total). I also changed the logging frequency to once every 1024 samples, instead of 256. 
+![Reinforce with baseline](./figures/grpo_reinforce_with_baseline_better_than_clip.png)
 
-Also, I realized that I was not using the GRPO clip loss for the off-policy experiments, so the previous ones may be useless. Using clip loss now on (eps = $.2$) the first experiment below, not the second.
-- (2, 128): 
-    - Hypothesis: Perhaps we should split the batch smaller over multiple epochs? 
-        - Conclusion: Clipped at .2. Gradients blew up. Perhaps we need a smaller stepsize, or a smaller cliprange.
-- (1, 256): 
-    - Hypothesis: I needed a fair baseline for time, since I started logging the val accuracy more frequently.
-        - Conclusion: Accidently ran with use_std_normalization = True. Got to ~80% accuracy quickly. Best run I've seen so far. Can't explain it.
-
-**Parallel Batch 3:** After the last run (1, 256), I'm turning standared deviation back on.
-- (2, 256): 
-    - Hypothesis: Going to set the cliprange to .1, but reuse the samples from the rollout batch. In the (1, 256) setting, we're noever reusing samples. Not sure if that matters, but perhaps it does.
-        - Conclusion: Gradient exploding. Need to split to explicit debugging. 
-
-So at this point I concluded that there must be an error in my code. 
-- I clamped the log ratio to be between -10 and 10.
-- I set cliprange to .2 because I think that should be fine (it's suggested in exercise.)
-- I divided the learning rate by the number of epochs_per_rollout_batch: 2. 
-
-Conclusions: 
-- There was an issue with how the old log probs were computed and indexed in [grpo_train_loop.py](../grpo_train_loop.py). I fixed that. That resulted in more stable training. 
-- Large LR is still causing somewhat of an issue. I think i'm going to divide it by epochs_per_rollout_batch.
-
-Running a few more tests with (2, 256) and (2, 128) and lr 1e-5 to see if we get progress and don't blow up.
-(2, 256) died. 
-Maybe I should simplify the loop logic regarding multiple rollouts.
-
-Bizarre, I tried (2, 256) again and it worked for a bit, but then fell to .08%. Not sure how that happened. The gradient norms and everythign else look fine. 
-
-I think i'm going to try to re-run the (1, 256) with the same code to see if there are any issues.
 
