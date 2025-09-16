@@ -230,7 +230,7 @@ def get_response_log_probs(
     return_token_entropy,
     ) -> dict[str, torch.Tensor]:
     mem("before logprob gather")
-    log_prob = F.log_softmax(logits, dim=-1)
+    log_prob = F.log_softmax(model(input_ids).logits, dim=-1)
     log_probs = log_prob.gather(dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
     mem("after logprob gather")
     if return_token_entropy:
