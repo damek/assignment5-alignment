@@ -278,7 +278,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                 "advantages_mean": metadata["advantages_mean"], 
                 "advantages_std": metadata["advantages_std"], 
                 "advantages_min": metadata["advantages_min"], 
-                "advantages_max": metadata["advantages_max"]})
+                "advantages_max": metadata["advantages_max"], 
+                "loss": loss.item()})
 
             if LOSS_TYPE == "grpo_clip":
                 wandb.log(
