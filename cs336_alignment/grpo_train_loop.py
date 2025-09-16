@@ -6,7 +6,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import wandb
 import argparse
 import os
-from drgrpo_grader import r1_zero_reward_fn, ques
+from drgrpo_grader import r1_zero_reward_fn, question_only_reward_fn
 import numpy as np
 import gc
 import grpo
@@ -26,7 +26,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--train_dataset_path", type=str, default="../data/gsm8k/train.jsonl")
     parser.add_argument("--eval_dataset_path", type=str, default="../data/gsm8k/test.jsonl")
-    parser.add_argument("--prompt_path", type=str, default="prompts/r1_zero.prompt")
+    parser.add_argument("--prompt_path", type=str, choices=["r1_zero.prompt", "question_only.prompt"], default="r1_zero.prompt")
     parser.add_argument("--output_path", type=str, default="outputs/sft_experiment.jsonl")
     parser.add_argument("--train_batch_size", type=int, default=256)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=128)
@@ -40,7 +40,6 @@ def get_args():
         choices=["no_baseline", "reinforce_with_baseline", "grpo_clip", "grpo_no_clip"],
         default="reinforce_with_baseline",
     )
-    parser.add_argument("--reward_fn", type=str, choices=["question_only_reward_fn", "r1_question_reward_fn"], default="r1_question_reward_fn")
     parser.add_argument("--group_size", type=int, default=8)
     parser.add_argument("--max_tokens_train", type=int, default=1024)
     parser.add_argument("--max_tokens_eval", type=int, default=1024)
@@ -82,7 +81,7 @@ LOSS_TYPE = args.loss_type
 USE_STD_NORMALIZATION: bool = args.use_std_normalization
 USE_LENGTH_NORMALIZATION: bool = args.use_length_normalization
 CLIPRANGE: float | None = args.cliprange
-reward_fn = args.reward_fn
+reward_fn = r1_zero_reward_fn if PROMPT_PATH == "r1_zero.prompt" else question_only_reward_fn
 if LOSS_TYPE == "grpo_clip":
     assert CLIPRANGE is not None, "cliprange must be provided for grpo_clip loss, e.g., --cliprange 0.2."
 
