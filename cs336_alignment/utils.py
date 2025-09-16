@@ -8,7 +8,6 @@ from vllm import LLM, SamplingParams
 from cs336_alignment.drgrpo_grader import r1_zero_reward_fn
 import gc
 
-PROMPT_PATH = "prompts/r1_zero.prompt"
 
 # the way the gsm8k dataset is format, the final part of the answer has a ### at the end followed by GT. 
 # Thanks to gpt5 for writing this one.
@@ -24,7 +23,7 @@ def mem(tag, device="cuda:1", enabled=False):
 def mem_reset_peak(device="cuda:1"):
     torch.cuda.reset_peak_memory_stats(device)
 
-def data_set_to_prompt_response_answer(records):
+def data_set_to_prompt_response_answer(records, prompt_path="prompts/r1_zero.prompt"):
     """
     records: iterable of dicts like {"question": str, "answer": str}
     returns: list of {"prompt": str, "response": str, "answer": str}
@@ -41,7 +40,7 @@ def data_set_to_prompt_response_answer(records):
             lines = a.splitlines()
             final_ans = lines[-1].strip()
             reasoning = "\n".join(lines[:-1]).strip()
-        get_base_prompt = open(PROMPT_PATH, "r").read()
+        get_base_prompt = open(prompt_path, "r").read()
         prompt = get_base_prompt.format(question=q)
         response = f"{reasoning}</think> <answer>{final_ans}</answer>"
         out.append({"prompt": prompt, "response": response, "answer": final_ans})

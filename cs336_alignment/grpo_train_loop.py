@@ -135,9 +135,9 @@ print("Loading dataset...")
 train_dataset = utils.load_dataset(TRAIN_DATASET_PATH)
 eval_dataset = utils.load_dataset(EVAL_DATASET_PATH)
 # OK now we're going to process the dataset into the r_1_zero format.
-train_dataset_r1_zero = utils.data_set_to_prompt_response_answer(train_dataset)
+train_dataset_r1_zero = utils.data_set_to_prompt_response_answer(train_dataset, prompt_path=PROMPT_PATH)
 
-eval_dataset_r1_zero = utils.data_set_to_prompt_response_answer(eval_dataset)
+eval_dataset_r1_zero = utils.data_set_to_prompt_response_answer(eval_dataset, prompt_path=PROMPT_PATH)
 
 optimizer = torch.optim.AdamW(
 model.parameters(),
@@ -316,7 +316,8 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
                     hf_model=model, 
                     tokenizer=tokenizer, 
                     dataset=eval_dataset_r1_zero, 
-                    max_tokens=MAX_TOKENS_EVAL)
+                    max_tokens=MAX_TOKENS_EVAL,
+                    reward_fn=reward_fn)
 
                 wandb.log(log_generations_dict) # index x by epoch
 
