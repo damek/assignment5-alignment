@@ -262,7 +262,6 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
             with torch.no_grad():
                 # log the ratio in wandb
                 wandb.log({"log_ratio": torch.abs(policy_log_probs - old_log_probs_epoch[batch_indices, :]).max()})
-            print("loss:", loss)
             ## log weights and gradient norms 
             with torch.no_grad():
                 grad_norm = 0
