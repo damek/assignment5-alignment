@@ -42,7 +42,10 @@ def data_set_to_prompt_response_answer(records, prompt_path="prompts/r1_zero.pro
             reasoning = "\n".join(lines[:-1]).strip()
         get_base_prompt = open(prompt_path, "r").read()
         prompt = get_base_prompt.format(question=q)
-        response = f"{reasoning}</think> <answer>{final_ans}</answer>"
+        if "question_only" in prompt_path:
+            response = f"{reasoning}\n{final_ans}".strip()
+        else:
+            response = f"{reasoning}</think> <answer>{final_ans}</answer>"
         out.append({"prompt": prompt, "response": response, "answer": final_ans})
     return out
     

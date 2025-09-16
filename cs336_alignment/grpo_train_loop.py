@@ -139,6 +139,9 @@ train_dataset_r1_zero = utils.data_set_to_prompt_response_answer(train_dataset, 
 
 eval_dataset_r1_zero = utils.data_set_to_prompt_response_answer(eval_dataset, prompt_path=PROMPT_PATH)
 
+print("eval dataset: ", eval_dataset_r1_zero[:10])
+print("train dataset: ", train_dataset_r1_zero[:10])
+
 optimizer = torch.optim.AdamW(
 model.parameters(),
 lr=LR,
@@ -308,6 +311,7 @@ for grpo_iteration in range(NUM_GRPO_ITERATIONS):
 
             if total_samples_processed % (1024) == 0:
                 print(f"GRPO Iteration {grpo_iteration}, Epoch {epoch}, Evaluating... Total samples processed: {total_samples_processed}")
+                print("Using reward function: ", reward_fn)
                 
                 vllm_utils.load_policy_into_vllm_instance(model, vllm_model)
 
